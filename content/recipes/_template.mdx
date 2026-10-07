@@ -1,0 +1,71 @@
+---
+# Recipe Template
+# Copy this file to content/recipes/<your-slug>.mdx and fill in the details.
+# The filename should match the slug (e.g., garlic-butter-shrimp.mdx for slug: garlic-butter-shrimp)
+
+title: "Recipe Title"
+slug: "recipe-slug"  # lowercase, hyphens only (e.g., garlic-butter-shrimp)
+description: "A brief, enticing description of the dish."
+
+# Image: place in public/recipes/<slug>/ folder (e.g., public/recipes/recipe-slug/hero.jpg)
+image: "/recipes/recipe-slug/hero.jpg"
+
+# Source (optional)
+source_url: null  # Original recipe URL if adapted from somewhere
+video_url: null   # YouTube URL for embedded video (e.g., https://www.youtube.com/watch?v=xxxxx)
+
+# Quick Facts
+prep_time: "15 min"
+cook_time: "30 min"
+total_time: "45 min"  # Optional, can calculate from prep + cook
+servings: "4 servings"
+difficulty: easy  # easy, medium, or hard
+cuisine: "Italian"
+
+# When this recipe was added (YYYY-MM-DD)
+date_added: "2024-10-07"
+
+# Mark as favorite to highlight on home page
+is_favorite: false
+
+# Tags - must be from content/tags.yml vocabulary
+# Leave empty arrays [] for categories that don't apply
+tags:
+  meal:
+    - dinner
+  cuisine:
+    - italian
+  diet: []
+  main_ingredient:
+    - pasta
+  time:
+    - under-1-hour
+  occasion:
+    - weeknight
+
+# Ingredients - group by section or use section: null for no grouping
+ingredients:
+  - section: null  # Use null for unsectioned list, or "For the Sauce" etc.
+    items:
+      - "1 lb pasta"
+      - "2 tbsp olive oil"
+      - "3 cloves garlic, minced"
+      - "Salt and pepper to taste"
+
+# Steps - numbered automatically
+steps:
+  - "First step of the recipe."
+  - "Second step with more details."
+  - "Continue with remaining steps."
+  - "Final step and serving suggestion."
+
+# Tips (optional)
+tips:
+  - "Helpful cooking tip"
+  - "Storage or make-ahead suggestion"
+---
+
+<!-- 
+Optional: Add any additional notes or story below the frontmatter.
+This content appears at the bottom of the recipe page.
+-->

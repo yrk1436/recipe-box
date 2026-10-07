@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ea580c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="plate" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fafafa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e5e5e5;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="curry" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ea580c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#c2410c;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+  
+  <!-- Decorative pattern -->
+  <g fill="#fff" fill-opacity="0.1">
+    <circle cx="50" cy="50" r="30"/>
+    <circle cx="150" cy="120" r="20"/>
+    <circle cx="700" cy="80" r="40"/>
+    <circle cx="750" cy="500" r="25"/>
+    <circle cx="100" cy="550" r="35"/>
+  </g>
+  
+  <!-- Plate shadow -->
+  <ellipse cx="400" cy="340" rx="200" ry="180" fill="#000" fill-opacity="0.2"/>
+  
+  <!-- Plate -->
+  <ellipse cx="400" cy="320" rx="200" ry="180" fill="url(#plate)"/>
+  <ellipse cx="400" cy="320" rx="170" ry="150" fill="#fafafa" stroke="#d4d4d4" stroke-width="2"/>
+  
+  <!-- Curry/food -->
+  <ellipse cx="400" cy="310" rx="140" ry="120" fill="url(#curry)"/>
+  
+  <!-- Chicken pieces -->
+  <g fill="#fcd34d">
+    <ellipse cx="360" cy="280" rx="30" ry="25" transform="rotate(-15 360 280)"/>
+    <ellipse cx="420" cy="300" rx="35" ry="28" transform="rotate(10 420 300)"/>
+    <ellipse cx="380" cy="340" rx="28" ry="22" transform="rotate(-5 380 340)"/>
+    <ellipse cx="450" cy="270" rx="25" ry="20" transform="rotate(20 450 270)"/>
+  </g>
+  
+  <!-- Cream swirls -->
+  <g fill="#fff" fill-opacity="0.6">
+    <path d="M340 290 Q360 270 380 290 Q400 310 420 290" stroke="#fff" stroke-width="3" fill="none"/>
+    <path d="M360 330 Q380 310 400 330 Q420 350 440 330" stroke="#fff" stroke-width="3" fill="none"/>
+  </g>
+  
+  <!-- Herb garnish -->
+  <g fill="#22c55e">
+    <ellipse cx="400" cy="260" rx="8" ry="4" transform="rotate(-30 400 260)"/>
+    <ellipse cx="410" cy="265" rx="8" ry="4" transform="rotate(20 410 265)"/>
+    <ellipse cx="395" cy="268" rx="6" ry="3" transform="rotate(-10 395 268)"/>
+  </g>
+  
+  <!-- Text label -->
+  <rect x="250" y="480" width="300" height="60" rx="10" fill="#fff" fill-opacity="0.95"/>
+  <text x="400" y="520" font-family="system-ui, sans-serif" font-size="24" font-weight="600" fill="#c2410c" text-anchor="middle">Butter Chicken</text>
+  
+  <!-- Example badge -->
+  <rect x="600" y="20" width="160" height="36" rx="18" fill="#dc2626"/>
+  <text x="680" y="45" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">EXAMPLE RECIPE</text>
+</svg>

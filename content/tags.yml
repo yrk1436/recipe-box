@@ -1,0 +1,84 @@
+# Recipe Tag Vocabulary
+# Tags must be from this list. Build fails on unknown tags.
+# Add new tags here before using them in recipes.
+
+meal:
+  - breakfast
+  - lunch
+  - dinner
+  - snack
+  - dessert
+  - appetizer
+  - brunch
+  - side-dish
+
+cuisine:
+  - indian
+  - italian
+  - mexican
+  - chinese
+  - thai
+  - japanese
+  - mediterranean
+  - american
+  - french
+  - korean
+  - vietnamese
+  - middle-eastern
+  - greek
+  - spanish
+
+diet:
+  - vegetarian
+  - vegan
+  - eggless
+  - gluten-free
+  - dairy-free
+  - keto
+  - low-carb
+  - paleo
+  - whole30
+  - nut-free
+
+main_ingredient:
+  - chicken
+  - beef
+  - pork
+  - lamb
+  - seafood
+  - fish
+  - shrimp
+  - tofu
+  - eggs
+  - pasta
+  - rice
+  - noodles
+  - vegetables
+  - beans
+  - lentils
+  - cheese
+  - chocolate
+
+time:
+  - under-15-min
+  - under-30-min
+  - under-1-hour
+  - over-1-hour
+  - meal-prep
+  - make-ahead
+  - slow-cooker
+  - instant-pot
+
+occasion:
+  - weeknight
+  - date-night
+  - party
+  - holiday
+  - thanksgiving
+  - christmas
+  - summer
+  - comfort-food
+  - healthy
+  - kid-friendly
+  - potluck
+  - picnic
