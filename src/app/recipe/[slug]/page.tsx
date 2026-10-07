@@ -10,10 +10,7 @@ import {
   Flame,
   Lightbulb,
   Play,
-  Timer,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { getAllRecipes, getRecipeBySlug } from '@/lib/recipes';
 
 export async function generateStaticParams() {
@@ -36,17 +33,17 @@ function extractYouTubeId(url: string | null | undefined): string | null {
   return null;
 }
 
-function getDifficultyColor(difficulty: string | undefined): string {
+function getDifficultyStyles(difficulty: string | undefined): { bg: string; text: string; label: string } {
   switch (difficulty) {
-    case 'easy': return 'bg-green-100 text-green-800';
-    case 'medium': return 'bg-amber-100 text-amber-800';
-    case 'hard': return 'bg-red-100 text-red-800';
-    default: return 'bg-gray-100 text-gray-600';
+    case 'easy': 
+      return { bg: 'bg-green-50', text: 'text-green-700', label: 'Easy' };
+    case 'medium': 
+      return { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Medium' };
+    case 'hard': 
+      return { bg: 'bg-red-50', text: 'text-red-700', label: 'Hard' };
+    default: 
+      return { bg: 'bg-gray-50', text: 'text-gray-600', label: 'Unknown' };
   }
-}
-
-function formatTagName(slug: string): string {
-  return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
 export default async function RecipeDetailPage({
@@ -63,244 +60,292 @@ export default async function RecipeDetailPage({
 
   const youtubeId = extractYouTubeId(recipe.video_url);
   const hasQuickFacts = recipe.prep_time || recipe.cook_time || recipe.servings || recipe.difficulty;
-  const allTags = Object.values(recipe.tags || {}).flat();
+  const difficultyStyles = getDifficultyStyles(recipe.difficulty);
 
   return (
-    <article className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="relative">
-        {/* Back button - floating */}
-        <Link
-          href="/"
-          className="fixed top-20 left-4 z-50 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg flex items-center gap-2 text-amber-800 hover:bg-white transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">All Recipes</span>
-        </Link>
+    <article className="min-h-screen bg-[var(--background)]">
+      {/* Hero Section - Full bleed */}
+      <header className="relative">
+        {/* Back Navigation - Fixed on mobile for easy reach */}
+        <nav className="fixed sm:absolute top-16 sm:top-4 left-2 sm:left-4 z-50">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg text-sm font-medium text-[var(--foreground)] hover:bg-white transition-colors tap-target"
+            aria-label="Back to all recipes"
+          >
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+            <span className="hidden sm:inline">All Recipes</span>
+          </Link>
+        </nav>
 
         {/* Hero Image */}
         {recipe.image ? (
-          <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
+          <div className="relative w-full h-[50vh] sm:h-[55vh] md:h-[60vh] overflow-hidden">
             <img
               src={recipe.image}
-              alt={recipe.title}
+              alt={`Photo of ${recipe.title}`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 hero-gradient" aria-hidden="true" />
+            
+            {/* Favorite badge */}
             {recipe.is_favorite && (
-              <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                <Star className="w-6 h-6 fill-amber-400 text-amber-400" />
+              <div 
+                className="absolute top-4 right-4 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
+                role="img"
+                aria-label="Favorite recipe"
+              >
+                <Star className="w-5 h-5 sm:w-6 sm:h-6 fill-[var(--accent)] text-[var(--accent)]" />
               </div>
             )}
+
+            {/* Title overlay on hero - visible on larger screens */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-10 hidden sm:block">
+              <div className="max-w-3xl">
+                {recipe.cuisine && (
+                  <p className="text-sm font-medium text-white/90 uppercase tracking-wider mb-2">
+                    {recipe.cuisine}
+                  </p>
+                )}
+                <h1 className="recipe-title text-white drop-shadow-lg">
+                  {recipe.title}
+                </h1>
+              </div>
+            </div>
           </div>
         ) : (
-          <div className="h-32 bg-gradient-to-br from-amber-100 to-orange-50" />
+          <div className="h-24 sm:h-32 bg-gradient-to-br from-[var(--secondary)] to-[var(--border)]" />
         )}
-      </div>
+      </header>
 
-      {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 -mt-16 relative z-10">
-        <div className="bg-white rounded-t-3xl shadow-xl p-6 md:p-10">
-          {/* Header */}
-          <header className="mb-8">
-            {/* Cuisine badge */}
+      {/* Content Container */}
+      <div className="relative -mt-6 sm:-mt-0">
+        <div className="container-recipe">
+          {/* Mobile Title Card - overlaps hero */}
+          <div className="sm:hidden bg-[var(--card)] rounded-t-3xl shadow-xl -mt-8 pt-6 px-5">
             {recipe.cuisine && (
-              <p className="text-amber-600 font-medium mb-2">{recipe.cuisine}</p>
+              <p className="text-xs font-medium text-[var(--primary)] uppercase tracking-wider mb-2">
+                {recipe.cuisine}
+              </p>
             )}
-
-            {/* Title */}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+            <h1 className="recipe-title text-[var(--foreground)]">
               {recipe.title}
             </h1>
+          </div>
+
+          {/* Main Content Card */}
+          <div className="bg-[var(--card)] sm:rounded-2xl sm:shadow-lg px-5 py-6 sm:p-8 md:p-10 sm:mt-8">
+            {/* Desktop Title (when no hero image) */}
+            {!recipe.image && (
+              <div className="mb-8">
+                {recipe.cuisine && (
+                  <p className="text-xs font-medium text-[var(--primary)] uppercase tracking-wider mb-2">
+                    {recipe.cuisine}
+                  </p>
+                )}
+                <h1 className="recipe-title text-[var(--foreground)]">
+                  {recipe.title}
+                </h1>
+              </div>
+            )}
+
+            {/* Favorite indicator for mobile (when there's no hero) */}
+            {!recipe.image && recipe.is_favorite && (
+              <div className="flex items-center gap-2 mb-4 text-[var(--accent)]">
+                <Star className="w-4 h-4 fill-current" />
+                <span className="text-sm font-medium">Favorite</span>
+              </div>
+            )}
 
             {/* Description */}
             {recipe.description && (
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="recipe-subtitle mb-6 sm:mb-8">
                 {recipe.description}
               </p>
             )}
 
-            {/* Tags */}
-            {allTags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {allTags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="secondary"
-                    className="bg-amber-50 text-amber-700 hover:bg-amber-100 font-normal"
-                  >
-                    {formatTagName(tag)}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </header>
-
-          {/* Quick Facts */}
-          {hasQuickFacts && (
-            <>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {/* Quick Facts Grid */}
+            {hasQuickFacts && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
                 {recipe.prep_time && (
-                  <div className="bg-amber-50 rounded-xl p-4 text-center">
-                    <Clock className="w-5 h-5 mx-auto text-amber-600 mb-1" />
-                    <p className="text-xs text-amber-600 uppercase tracking-wide">Prep</p>
-                    <p className="font-semibold text-gray-900">{recipe.prep_time}</p>
+                  <div className="flex flex-col items-center p-4 bg-[var(--secondary)] rounded-xl text-center">
+                    <Clock className="w-5 h-5 text-[var(--muted-foreground)] mb-2" aria-hidden="true" />
+                    <span className="text-xs text-[var(--muted-foreground)] uppercase tracking-wide mb-1">Prep</span>
+                    <span className="font-semibold text-[var(--foreground)]">{recipe.prep_time}</span>
                   </div>
                 )}
                 {recipe.cook_time && (
-                  <div className="bg-orange-50 rounded-xl p-4 text-center">
-                    <Flame className="w-5 h-5 mx-auto text-orange-600 mb-1" />
-                    <p className="text-xs text-orange-600 uppercase tracking-wide">Cook</p>
-                    <p className="font-semibold text-gray-900">{recipe.cook_time}</p>
+                  <div className="flex flex-col items-center p-4 bg-[var(--secondary)] rounded-xl text-center">
+                    <Flame className="w-5 h-5 text-[var(--muted-foreground)] mb-2" aria-hidden="true" />
+                    <span className="text-xs text-[var(--muted-foreground)] uppercase tracking-wide mb-1">Cook</span>
+                    <span className="font-semibold text-[var(--foreground)]">{recipe.cook_time}</span>
                   </div>
                 )}
                 {recipe.servings && (
-                  <div className="bg-green-50 rounded-xl p-4 text-center">
-                    <Users className="w-5 h-5 mx-auto text-green-600 mb-1" />
-                    <p className="text-xs text-green-600 uppercase tracking-wide">Servings</p>
-                    <p className="font-semibold text-gray-900">{recipe.servings}</p>
+                  <div className="flex flex-col items-center p-4 bg-[var(--secondary)] rounded-xl text-center">
+                    <Users className="w-5 h-5 text-[var(--muted-foreground)] mb-2" aria-hidden="true" />
+                    <span className="text-xs text-[var(--muted-foreground)] uppercase tracking-wide mb-1">Serves</span>
+                    <span className="font-semibold text-[var(--foreground)]">{recipe.servings}</span>
                   </div>
                 )}
                 {recipe.difficulty && (
-                  <div className={`rounded-xl p-4 text-center ${getDifficultyColor(recipe.difficulty)}`}>
-                    <ChefHat className="w-5 h-5 mx-auto mb-1" />
-                    <p className="text-xs uppercase tracking-wide">Difficulty</p>
-                    <p className="font-semibold capitalize">{recipe.difficulty}</p>
+                  <div className={`flex flex-col items-center p-4 ${difficultyStyles.bg} rounded-xl text-center`}>
+                    <ChefHat className={`w-5 h-5 ${difficultyStyles.text} mb-2`} aria-hidden="true" />
+                    <span className={`text-xs ${difficultyStyles.text} uppercase tracking-wide mb-1`}>Level</span>
+                    <span className={`font-semibold ${difficultyStyles.text}`}>{difficultyStyles.label}</span>
                   </div>
                 )}
               </div>
-              <Separator className="mb-8" />
-            </>
-          )}
+            )}
 
-          {/* YouTube Video Embed */}
-          {youtubeId && (
-            <section className="mb-10">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Play className="w-5 h-5 text-red-500" />
-                Watch the Video
-              </h2>
-              <div className="aspect-video rounded-xl overflow-hidden shadow-lg">
-                <iframe
-                  src={`https://www.youtube.com/embed/${youtubeId}`}
-                  title={recipe.title}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </section>
-          )}
+            {/* Divider */}
+            {hasQuickFacts && (
+              <hr className="border-[var(--border)] mb-8 sm:mb-10" />
+            )}
 
-          {/* Ingredients */}
-          {recipe.ingredients && recipe.ingredients.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <span className="text-2xl">🥗</span>
-                Ingredients
-              </h2>
-              <div className="space-y-6">
-                {recipe.ingredients.map((section, idx) => (
-                  <div key={idx}>
-                    {section.section && (
-                      <h3 className="font-medium text-amber-800 mb-3 text-lg">
-                        {section.section}
-                      </h3>
-                    )}
-                    <ul className="space-y-2">
-                      {section.items.map((item, itemIdx) => (
-                        <li
-                          key={itemIdx}
-                          className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0"
-                        >
-                          <span className="w-2 h-2 rounded-full bg-amber-400 mt-2 shrink-0" />
-                          <span className="text-gray-700">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
+            {/* Video Section */}
+            {youtubeId && (
+              <section className="mb-10 sm:mb-12" aria-labelledby="video-heading">
+                <h2 id="video-heading" className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-[var(--foreground)] mb-4">
+                  <Play className="w-5 h-5 text-red-500" aria-hidden="true" />
+                  Watch the Recipe
+                </h2>
+                <div className="aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-lg bg-black">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    title={`Video: ${recipe.title}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </section>
+            )}
 
-          {/* Steps */}
-          {recipe.steps && recipe.steps.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                <span className="text-2xl">👩‍🍳</span>
-                Instructions
-              </h2>
-              <ol className="space-y-6">
-                {recipe.steps.map((step, idx) => (
-                  <li key={idx} className="flex gap-4">
-                    <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500 text-white flex items-center justify-center font-semibold text-sm">
-                      {idx + 1}
-                    </span>
-                    <p className="text-gray-700 leading-relaxed pt-1">{step}</p>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )}
+            {/* Ingredients Section */}
+            {recipe.ingredients && recipe.ingredients.length > 0 && (
+              <section className="mb-10 sm:mb-12" aria-labelledby="ingredients-heading">
+                <h2 id="ingredients-heading" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-6">
+                  Ingredients
+                </h2>
+                
+                <div className="space-y-6">
+                  {recipe.ingredients.map((section, sectionIdx) => (
+                    <div key={sectionIdx}>
+                      {section.section && (
+                        <h3 className="text-base font-semibold text-[var(--primary)] mb-4 pb-2 border-b border-[var(--border)]">
+                          {section.section}
+                        </h3>
+                      )}
+                      <ul className="space-y-0" role="list">
+                        {section.items.map((item, itemIdx) => (
+                          <li
+                            key={itemIdx}
+                            className="ingredient-item"
+                          >
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {/* Tips */}
-          {recipe.tips && recipe.tips.length > 0 && (
-            <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <Lightbulb className="w-6 h-6 text-amber-500" />
-                Tips & Notes
-              </h2>
-              <div className="bg-amber-50 rounded-xl p-6">
-                <ul className="space-y-3">
-                  {recipe.tips.map((tip, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <span className="text-amber-500 mt-1">💡</span>
-                      <span className="text-amber-900">{tip}</span>
+            {/* Instructions Section */}
+            {recipe.steps && recipe.steps.length > 0 && (
+              <section className="mb-10 sm:mb-12" aria-labelledby="instructions-heading">
+                <h2 id="instructions-heading" className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-6">
+                  Instructions
+                </h2>
+                
+                <ol className="space-y-6" role="list">
+                  {recipe.steps.map((step, idx) => (
+                    <li key={idx} className="flex gap-4 sm:gap-5">
+                      <span 
+                        className="step-number"
+                        aria-hidden="true"
+                      >
+                        {idx + 1}
+                      </span>
+                      <p className="flex-1 text-[var(--foreground)] leading-relaxed pt-1">
+                        <span className="sr-only">Step {idx + 1}: </span>
+                        {step}
+                      </p>
                     </li>
                   ))}
-                </ul>
-              </div>
-            </section>
-          )}
+                </ol>
+              </section>
+            )}
 
-          {/* Source */}
-          {recipe.source_url && (
-            <section className="border-t border-gray-100 pt-8">
-              <h2 className="text-lg font-medium text-gray-500 mb-3">Source</h2>
-              <a
-                href={recipe.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-amber-600 hover:text-amber-800 font-medium"
-              >
-                <ExternalLink className="w-4 h-4" />
-                {(() => {
-                  try {
-                    return new URL(recipe.source_url).hostname.replace('www.', '');
-                  } catch {
-                    return 'View original';
-                  }
-                })()}
-              </a>
-            </section>
-          )}
+            {/* Tips Section */}
+            {recipe.tips && recipe.tips.length > 0 && (
+              <section className="mb-10 sm:mb-12" aria-labelledby="tips-heading">
+                <h2 id="tips-heading" className="flex items-center gap-2 text-lg sm:text-xl font-semibold text-[var(--foreground)] mb-4">
+                  <Lightbulb className="w-5 h-5 text-[var(--accent)]" aria-hidden="true" />
+                  Tips & Notes
+                </h2>
+                
+                <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/20 rounded-xl sm:rounded-2xl p-5 sm:p-6">
+                  <ul className="space-y-3" role="list">
+                    {recipe.tips.map((tip, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <span className="text-[var(--accent)] mt-0.5" aria-hidden="true">•</span>
+                        <span className="text-[var(--foreground)]">{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            )}
 
-          {/* Date added */}
-          {recipe.date_added && (
-            <p className="text-sm text-gray-400 mt-8">
-              Added {new Date(recipe.date_added).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
-          )}
+            {/* Source */}
+            {recipe.source_url && (
+              <section className="pt-6 sm:pt-8 border-t border-[var(--border)]">
+                <h2 className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-widest mb-3">
+                  Source
+                </h2>
+                <a
+                  href={recipe.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[var(--primary)] font-medium hover:underline underline-offset-2 tap-target"
+                >
+                  <ExternalLink className="w-4 h-4" aria-hidden="true" />
+                  <span>
+                    {(() => {
+                      try {
+                        return new URL(recipe.source_url).hostname.replace('www.', '');
+                      } catch {
+                        return 'View original';
+                      }
+                    })()}
+                  </span>
+                </a>
+              </section>
+            )}
+
+            {/* Date Added */}
+            {recipe.date_added && (
+              <p className="text-sm text-[var(--muted-foreground)] mt-8 pt-6 border-t border-[var(--border)]">
+                Added{' '}
+                <time dateTime={recipe.date_added}>
+                  {new Date(recipe.date_added).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Bottom padding */}
-      <div className="h-16 bg-white" />
+      {/* Bottom spacing */}
+      <div className="h-8 sm:h-16 safe-bottom" />
     </article>
   );
 }

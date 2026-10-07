@@ -103,7 +103,6 @@ export function getRecipeBySlug(slug: string): Recipe | undefined {
 
 export function getAllTags(): { category: TagCategory; tags: Array<{ slug: string; name: string; count: number }> }[] {
   const recipes = getAllRecipes();
-  const vocabulary = getTagVocabulary();
   
   const tagCounts: Record<string, Record<string, number>> = {};
   

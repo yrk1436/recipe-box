@@ -2,10 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Fuse from 'fuse.js';
-import { Search, Star, ChefHat, SlidersHorizontal, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Search, Star, ChefHat, X, Filter } from 'lucide-react';
 import { RecipeCard } from '@/components/recipe-card';
 import { Recipe, TAG_CATEGORIES, TagCategory } from '@/lib/schema';
 
@@ -25,7 +22,6 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['meal', 'cuisine']));
   const [showFilters, setShowFilters] = useState(false);
 
-  // Set up Fuse.js for fuzzy search
   const fuse = useMemo(() => {
     const allIngredients = (recipe: Recipe) => 
       (recipe.ingredients || []).flatMap(s => s.items).join(' ');
@@ -45,17 +41,14 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
     });
   }, [recipes]);
 
-  // Filter recipes
   const filteredRecipes = useMemo(() => {
     let result = recipes;
 
-    // Text search
     if (search.trim()) {
       const searchResults = fuse.search(search.trim());
       result = searchResults.map(r => r.item);
     }
 
-    // Tag filtering
     if (selectedTags.size > 0) {
       result = result.filter(recipe => {
         const recipeTags = new Set(Object.values(recipe.tags || {}).flat());
@@ -63,7 +56,6 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
       });
     }
 
-    // Favorites filter
     if (showFavorites) {
       result = result.filter(r => r.is_favorite);
     }
@@ -102,101 +94,129 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <div className="bg-gradient-to-b from-amber-50 to-white py-12 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4 tracking-tight">
-            Our Recipe Collection
-          </h2>
-          <p className="text-lg text-amber-700 max-w-2xl mx-auto">
-            A curated collection of favorite recipes from around the kitchen
-          </p>
+      {/* Hero Section - Magazine style */}
+      <section className="relative bg-[var(--secondary)] overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 10 0 L 0 0 0 10" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+            </pattern>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+          </svg>
+        </div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16 md:py-20">
+          <div className="max-w-2xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[var(--foreground)] mb-3 sm:mb-4">
+              Recipe Collection
+            </h1>
+            <p className="text-base sm:text-lg text-[var(--muted-foreground)] leading-relaxed">
+              A curated collection of tried-and-true recipes for every occasion.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Search & Filters - Sticky on mobile */}
+      <div className="sticky top-14 sm:top-16 z-40 bg-[var(--background)] border-b border-[var(--border)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          {/* Search Bar */}
+          <div className="flex gap-2 sm:gap-3">
+            <div className="relative flex-1">
+              <Search 
+                className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-[var(--muted-foreground)]" 
+                aria-hidden="true"
+              />
+              <input
+                type="search"
+                placeholder="Search recipes..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-11 sm:h-12 pl-10 sm:pl-12 pr-4 bg-[var(--card)] border border-[var(--border)] rounded-xl text-base placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:border-transparent transition-shadow"
+                aria-label="Search recipes"
+              />
+            </div>
+            
+            {/* Favorites Button */}
+            <button
+              onClick={() => setShowFavorites(!showFavorites)}
+              className={`flex items-center justify-center h-11 sm:h-12 px-3 sm:px-4 rounded-xl border transition-all tap-target ${
+                showFavorites 
+                  ? 'bg-[var(--primary)] text-white border-[var(--primary)]' 
+                  : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--secondary)]'
+              }`}
+              aria-pressed={showFavorites}
+              aria-label={showFavorites ? "Show all recipes" : "Show favorites only"}
+            >
+              <Star className={`w-4 h-4 sm:w-5 sm:h-5 ${showFavorites ? 'fill-current' : ''}`} />
+              <span className="ml-2 text-sm font-medium hidden sm:inline">Favorites</span>
+            </button>
+
+            {/* Filters Button */}
+            {hasAnyTags && (
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center justify-center h-11 sm:h-12 px-3 sm:px-4 rounded-xl border transition-all tap-target ${
+                  showFilters || selectedTags.size > 0
+                    ? 'bg-[var(--secondary)] border-[var(--primary)]/30 text-[var(--foreground)]' 
+                    : 'bg-[var(--card)] border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--secondary)]'
+                }`}
+                aria-expanded={showFilters}
+                aria-label="Toggle filters"
+              >
+                <Filter className="w-4 h-4 sm:w-5 sm:h-5" />
+                {selectedTags.size > 0 && (
+                  <span className="ml-1.5 flex items-center justify-center w-5 h-5 rounded-full bg-[var(--primary)] text-white text-xs font-medium">
+                    {selectedTags.size}
+                  </span>
+                )}
+                <span className="ml-2 text-sm font-medium hidden sm:inline">Filters</span>
+              </button>
+            )}
+          </div>
+
+          {/* Active Filters Pills */}
+          {hasFilters && (
+            <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[var(--border)]">
+              <span className="text-xs font-medium text-[var(--muted-foreground)] uppercase tracking-wide">Active:</span>
+              
+              {showFavorites && (
+                <button
+                  onClick={() => setShowFavorites(false)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-full text-sm hover:bg-[var(--border)] transition-colors"
+                >
+                  <Star className="w-3 h-3 fill-current" />
+                  Favorites
+                  <X className="w-3 h-3 ml-0.5" />
+                </button>
+              )}
+              
+              {Array.from(selectedTags).map(slug => (
+                <button
+                  key={slug}
+                  onClick={() => toggleTag(slug)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-[var(--secondary)] text-[var(--secondary-foreground)] rounded-full text-sm hover:bg-[var(--border)] transition-colors"
+                >
+                  {formatTagName(slug)}
+                  <X className="w-3 h-3 ml-0.5" />
+                </button>
+              ))}
+              
+              <button
+                onClick={clearFilters}
+                className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-2 ml-1"
+              >
+                Clear all
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Search and Filter Bar */}
-        <div className="sticky top-[73px] z-40 bg-white/95 backdrop-blur-sm py-4 -mx-4 px-4 mb-6 border-b border-amber-100">
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400" />
-                <Input
-                  type="search"
-                  placeholder="Search recipes, ingredients, tags..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-12 bg-amber-50/50 border-amber-200 text-base h-12 rounded-xl focus:bg-white"
-                />
-              </div>
-              <Button
-                variant={showFavorites ? 'default' : 'outline'}
-                onClick={() => setShowFavorites(!showFavorites)}
-                className={`h-12 px-4 rounded-xl ${showFavorites ? 'bg-amber-500 hover:bg-amber-600' : 'border-amber-200 hover:bg-amber-50'}`}
-              >
-                <Star className={`w-5 h-5 ${showFavorites ? 'fill-white' : ''}`} />
-                <span className="ml-2 hidden sm:inline">Favorites</span>
-              </Button>
-              {hasAnyTags && (
-                <Button
-                  variant="outline"
-                  onClick={() => setShowFilters(!showFilters)}
-                  className={`h-12 px-4 rounded-xl border-amber-200 ${showFilters ? 'bg-amber-100' : 'hover:bg-amber-50'}`}
-                >
-                  <SlidersHorizontal className="w-5 h-5" />
-                  <span className="ml-2 hidden sm:inline">Filters</span>
-                  {selectedTags.size > 0 && (
-                    <Badge className="ml-2 bg-amber-500 text-white text-xs">
-                      {selectedTags.size}
-                    </Badge>
-                  )}
-                </Button>
-              )}
-            </div>
-
-            {/* Active filters */}
-            {hasFilters && (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm text-amber-600">Active:</span>
-                {showFavorites && (
-                  <Badge
-                    variant="secondary"
-                    className="bg-amber-100 text-amber-800 cursor-pointer hover:bg-amber-200"
-                    onClick={() => setShowFavorites(false)}
-                  >
-                    Favorites
-                    <X className="w-3 h-3 ml-1" />
-                  </Badge>
-                )}
-                {Array.from(selectedTags).map(slug => (
-                  <Badge
-                    key={slug}
-                    variant="secondary"
-                    className="bg-amber-100 text-amber-800 cursor-pointer hover:bg-amber-200"
-                    onClick={() => toggleTag(slug)}
-                  >
-                    {formatTagName(slug)}
-                    <X className="w-3 h-3 ml-1" />
-                  </Badge>
-                ))}
-                <button
-                  onClick={clearFilters}
-                  className="text-sm text-amber-600 hover:text-amber-800 underline ml-2"
-                >
-                  Clear all
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Filter Panel */}
-        {showFilters && hasAnyTags && (
-          <div className="bg-amber-50/50 rounded-2xl p-6 mb-8 border border-amber-100">
-            <h3 className="font-semibold text-amber-900 mb-4 flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4" />
-              Filter by Category
-            </h3>
+      {/* Filter Panel - Expandable */}
+      {showFilters && hasAnyTags && (
+        <div className="bg-[var(--card)] border-b border-[var(--border)]">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
             <div className="space-y-4">
               {TAG_CATEGORIES.map((category) => {
                 const categoryTags = usedTags[category.id] || [];
@@ -206,35 +226,44 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
                 const selectedInCategory = categoryTags.filter(t => selectedTags.has(t)).length;
 
                 return (
-                  <div key={category.id} className="border-b border-amber-100 pb-4 last:border-0 last:pb-0">
+                  <div key={category.id}>
                     <button
                       onClick={() => toggleCategory(category.id)}
-                      className="flex items-center justify-between w-full text-left mb-2"
+                      className="flex items-center justify-between w-full text-left py-2 tap-target"
+                      aria-expanded={isExpanded}
                     >
-                      <span className="font-medium text-amber-800 flex items-center gap-2">
-                        <span>{category.icon}</span>
+                      <span className="flex items-center gap-2 text-sm font-medium text-[var(--foreground)]">
+                        <span aria-hidden="true">{category.icon}</span>
                         {category.name}
                         {selectedInCategory > 0 && (
-                          <Badge className="bg-amber-500 text-white text-xs">
+                          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[var(--primary)] text-white text-xs">
                             {selectedInCategory}
-                          </Badge>
+                          </span>
                         )}
                       </span>
-                      <span className="text-amber-400 text-sm">
-                        {isExpanded ? '−' : '+'}
-                      </span>
+                      <svg 
+                        className={`w-4 h-4 text-[var(--muted-foreground)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </button>
+                    
                     {isExpanded && (
-                      <div className="flex flex-wrap gap-2 mt-2">
+                      <div className="flex flex-wrap gap-2 mt-2 pl-6 sm:pl-7">
                         {categoryTags.map((tag) => (
                           <button
                             key={tag}
                             onClick={() => toggleTag(tag)}
-                            className={`text-sm px-3 py-1.5 rounded-full transition-all ${
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all tap-target ${
                               selectedTags.has(tag)
-                                ? 'bg-amber-500 text-white shadow-sm'
-                                : 'bg-white text-amber-700 hover:bg-amber-100 border border-amber-200'
+                                ? 'bg-[var(--primary)] text-white'
+                                : 'bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--border)]'
                             }`}
+                            aria-pressed={selectedTags.has(tag)}
                           >
                             {formatTagName(tag)}
                           </button>
@@ -246,57 +275,71 @@ export function HomeClient({ recipes, usedTags }: HomeClientProps) {
               })}
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Results */}
+      {/* Results Section */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {filteredRecipes.length === 0 ? (
-          <div className="text-center py-20">
+          <div className="text-center py-16 sm:py-24">
             {hasFilters ? (
-              <div className="max-w-md mx-auto">
-                <Search className="w-16 h-16 mx-auto text-amber-200 mb-6" />
-                <h3 className="text-2xl font-semibold text-amber-800 mb-3">
+              <div className="max-w-sm mx-auto">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[var(--secondary)] flex items-center justify-center">
+                  <Search className="w-7 h-7 text-[var(--muted-foreground)]" />
+                </div>
+                <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">
                   No recipes found
-                </h3>
-                <p className="text-amber-600 mb-6">
-                  Try adjusting your search or removing some filters
+                </h2>
+                <p className="text-[var(--muted-foreground)] mb-6">
+                  Try adjusting your search or removing some filters.
                 </p>
-                <Button 
-                  variant="outline" 
+                <button 
                   onClick={clearFilters}
-                  className="border-amber-300 hover:bg-amber-50"
+                  className="inline-flex items-center px-5 py-2.5 bg-[var(--primary)] text-white rounded-xl font-medium hover:bg-[var(--primary)]/90 transition-colors tap-target"
                 >
                   Clear all filters
-                </Button>
+                </button>
               </div>
             ) : (
-              <div className="max-w-md mx-auto">
-                <ChefHat className="w-20 h-20 mx-auto text-amber-200 mb-6" />
-                <h3 className="text-2xl font-semibold text-amber-800 mb-3">
+              <div className="max-w-sm mx-auto">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[var(--secondary)] flex items-center justify-center">
+                  <ChefHat className="w-7 h-7 text-[var(--muted-foreground)]" />
+                </div>
+                <h2 className="text-xl font-semibold text-[var(--foreground)] mb-2">
                   No recipes yet
-                </h3>
-                <p className="text-amber-600">
-                  Add recipe files to <code className="bg-amber-100 px-1 rounded">content/recipes/</code> to get started.
+                </h2>
+                <p className="text-[var(--muted-foreground)]">
+                  Add recipe files to <code className="px-1.5 py-0.5 bg-[var(--secondary)] rounded text-sm">content/recipes/</code> to get started.
                 </p>
               </div>
             )}
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-amber-700">
-                <span className="font-semibold text-amber-900">{filteredRecipes.length}</span>
+            {/* Results count */}
+            <div className="mb-5 sm:mb-6">
+              <p className="text-sm text-[var(--muted-foreground)]">
+                <span className="font-semibold text-[var(--foreground)]">{filteredRecipes.length}</span>
                 {' '}recipe{filteredRecipes.length !== 1 ? 's' : ''}
                 {hasFilters ? ' found' : ' in collection'}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredRecipes.map((recipe) => (
-                <RecipeCard key={recipe.slug} recipe={recipe} />
+
+            {/* Recipe Grid - Mobile first */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {filteredRecipes.map((recipe, index) => (
+                <div 
+                  key={recipe.slug} 
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <RecipeCard recipe={recipe} />
+                </div>
               ))}
             </div>
           </>
         )}
-      </div>
+      </section>
     </div>
   );
 }
