@@ -5,7 +5,7 @@ subtitle: Her first and best banana cake
 description: Her first and best banana cake, baked in a loaf pan with wheat flour, butter, and walnuts.
 personalNote: From Swathi's handwritten kitchen notes.
 image: banana-cake.jpg
-imageAlt: Banana cake loaf topped with banana slices and walnuts in a black loaf pan
+imageAlt: Homemade banana walnut loaf on a wooden serving board
 cuisine: American
 mealTypes:
   - dessert
@@ -68,4 +68,3 @@ tips:
   - Walnuts are her usual nuts for this cake.
 source:
   note: From handwritten kitchen notes
-  imageCredit: Cody Chan / Unsplash

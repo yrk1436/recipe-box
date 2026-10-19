@@ -94,4 +94,4 @@ Production URL is picked up from Vercel (`VERCEL_PROJECT_PRODUCTION_URL`) for ca
 
 ## License
 
-Recipe text in this repo is for the family’s home cookbook. The Banana Cake photo is by Cody Chan / Unsplash.
+Recipe text in this repo is for the family’s home cookbook. The Banana Cake photo is a homemade loaf from the family kitchen.
