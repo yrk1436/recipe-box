@@ -1,0 +1,72 @@
+# Complete example recipe file.
+# Copy this to src/data/recipes/your-slug.yml (not into demo/).
+# Files starting with _ are not published.
+#
+# Do not invent quantities. If a note says "some" or has no amount, leave quantity empty
+# or use a short text measure and set scalable: false.
+
+id: example-spiced-rice
+slug: example-spiced-rice
+title: Example Spiced Rice
+subtitle: Optional shorter line under the title
+description: A short public description for search, cards, and social previews.
+personalNote: Optional note about who made it or when it is cooked at home.
+# image: your-photo.jpg
+# imageAlt: Plain-language description of the photo
+cuisine: Indian
+mealTypes:
+  - dinner
+dietaryTags:
+  - vegetarian
+tags:
+  - rice
+  - weeknight
+aliases:
+  - jeera rice
+ingredients:
+  - quantity: "1"
+    unit: cup
+    name: basmati rice
+    prep: rinsed
+    group: Rice
+  - quantity: "2"
+    unit: cups
+    name: water
+    group: Rice
+    scalable: false
+  - quantity: "1"
+    unit: tablespoon
+    name: ghee
+    group: Tadka
+  - quantity: "1"
+    unit: teaspoon
+    name: cumin seeds
+    group: Tadka
+  - quantity: ""
+    name: salt
+    prep: to taste
+    scalable: false
+instructions:
+  - Write each step as it appears in the note. Do not add temperatures or times that were not there.
+  - Keep informal wording. If the note is one paragraph, split only where the actions clearly change.
+prepTimeMinutes: 10
+cookTimeMinutes: 20
+totalTimeMinutes: 30
+servings: 4
+difficulty: easy
+cookingMethod: stovetop
+scalable: true
+featured: false
+dateAdded: "2026-10-19"
+tips:
+  - Optional cooking tip from the original note.
+substitutions:
+  - Optional substitution, only if it was written down.
+variations:
+  - Optional variation.
+storageNotes: Optional leftover note.
+source:
+  name: Optional source name
+  url: https://example.com/recipe
+  note: Optional attribution
+  imageCredit: Optional photographer credit

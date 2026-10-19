@@ -1,0 +1,6 @@
+---
+type Props = { title: string; class?: string };
+const { title, class: className } = Astro.props;
+---
+
+<div class:list={["placeholder", className]} aria-hidden="true">{title.charAt(0)}</div>

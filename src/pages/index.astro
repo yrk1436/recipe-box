@@ -1,0 +1,165 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { Image } from "astro:assets";
+import { site } from "../data/site";
+import {
+  getAllRecipes,
+  getCardModels,
+  getFeaturedRecipe,
+  getQuickRecipes,
+  getRecentRecipes,
+  getVisibleCategories,
+  toCardModel,
+} from "../lib/recipes";
+import { getRecipeImage, publicRecipeImagePath } from "../lib/images";
+import { recipeTimeLabel } from "../lib/format";
+import RecipeGrid from "../components/RecipeGrid.astro";
+import RecipeCard from "../components/RecipeCard.astro";
+import CategoryTile from "../components/CategoryTile.astro";
+import EmptyState from "../components/EmptyState.astro";
+import FavoritesRuntime from "../components/FavoritesRuntime.astro";
+import PlaceholderImage from "../components/PlaceholderImage.astro";
+
+const recipes = await getAllRecipes();
+const cards = await getCardModels();
+const featured = getFeaturedRecipe(recipes);
+const recent = getRecentRecipes(recipes, 4, featured?.id);
+const quick = getQuickRecipes(recipes, featured?.id);
+const categories = getVisibleCategories(recipes);
+const featuredImage = featured ? getRecipeImage(featured.image) : undefined;
+---
+
+<BaseLayout
+  recipes={cards}
+  currentPath="/"
+  description={site.description}
+  image={featured ? publicRecipeImagePath(featured.image) : undefined}
+>
+  <section class="container hero">
+    <div class="hero__copy">
+      <p class="kicker">{site.subtitle}</p>
+      <h1>{site.name}</h1>
+      <p>{site.description}</p>
+    </div>
+    {
+      featured ? (
+        <a class="featured" href={`/recipes/${featured.slug}/`}>
+          <div class="featured__media">
+            {featuredImage ? (
+              <Image
+                src={featuredImage}
+                alt={featured.imageAlt ?? ""}
+                widths={[480, 768, 1200]}
+                sizes="(max-width: 1023px) 100vw, 50vw"
+                loading="eager"
+                fetchpriority="high"
+              />
+            ) : (
+              <PlaceholderImage title={featured.title} />
+            )}
+          </div>
+          <div class="featured__body">
+            <p class="kicker">Featured recipe</p>
+            <h2>{featured.title}</h2>
+            {featured.subtitle && <p class="serif muted">{featured.subtitle}</p>}
+            {featured.description && <p class="muted">{featured.description}</p>}
+            <p class="card__meta">
+              {recipeTimeLabel(featured) && <span>{recipeTimeLabel(featured)}</span>}
+              {featured.cuisine && <span>{featured.cuisine}</span>}
+            </p>
+          </div>
+        </a>
+      ) : (
+        <EmptyState title="The box is empty" body="Add a recipe file to src/data/recipes/ and this page will fill in." />
+      )
+    }
+  </section>
+
+  {
+    categories.length > 0 && (
+      <section class="container section">
+        <div class="section__head">
+          <h2>Browse by category</h2>
+          <a href="/categories/">All categories</a>
+        </div>
+        <div class="grid grid--tiles">
+          {categories.map((category) => (
+            <CategoryTile href={`/categories/${category.id}/`} label={category.label} count={category.count} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    recent.length > 0 && (
+      <section class="container section">
+        <div class="section__head">
+          <h2>Recently added</h2>
+        </div>
+        <RecipeGrid recipes={recent.map(toCardModel)} />
+      </section>
+    )
+  }
+
+  {
+    quick.length > 0 && (
+      <section class="container section">
+        <div class="section__head">
+          <h2>Quick and easy</h2>
+          <span class="muted">{site.quickMealMinutes} minutes or less</span>
+        </div>
+        <RecipeGrid recipes={quick.map(toCardModel)} />
+      </section>
+    )
+  }
+
+  <section class="container section" data-home-favorites hidden>
+    <div class="section__head">
+      <h2>Favorites</h2>
+      <a href="/favorites/">Open favorites</a>
+    </div>
+    <div class="grid grid--cards">
+      {
+        cards.map((recipe) => (
+          <div data-favorite-id={recipe.id} hidden>
+            <RecipeCard recipe={recipe} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container section">
+    <EmptyState title="Looking for everything?" body="The full shelf is searchable, filterable, and ready for a quiet Sunday or a busy weeknight.">
+      <p><a class="button" href="/recipes/">Browse all recipes</a></p>
+    </EmptyState>
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>
+
+<script>
+  import { readFavorites } from "../lib/favorites";
+
+  function syncHomeFavorites() {
+    const section = document.querySelector<HTMLElement>("[data-home-favorites]");
+    const nodes = document.querySelectorAll<HTMLElement>("[data-home-favorites] [data-favorite-id]");
+    const ids = readFavorites().ids;
+    let shown = 0;
+    nodes.forEach((node) => {
+      const id = node.dataset.favoriteId;
+      const match = Boolean(id && ids.includes(id));
+      node.hidden = !match;
+      if (match) shown += 1;
+    });
+    if (section) section.hidden = shown === 0;
+  }
+
+  syncHomeFavorites();
+  window.addEventListener("storage", syncHomeFavorites);
+  document.addEventListener("click", (event) => {
+    if ((event.target as HTMLElement).closest("[data-favorite-button]")) {
+      window.setTimeout(syncHomeFavorites, 0);
+    }
+  });
+</script>

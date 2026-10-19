@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import RecipeCard from "../components/RecipeCard.astro";
+import EmptyState from "../components/EmptyState.astro";
+import FavoritesRuntime from "../components/FavoritesRuntime.astro";
+import { getCardModels } from "../lib/recipes";
+import { site } from "../data/site";
+
+const cards = await getCardModels();
+---
+
+<BaseLayout
+  title="Favorites"
+  description={`Recipes you have saved in this browser from ${site.name}.`}
+  recipes={cards}
+  currentPath="/favorites/"
+>
+  <section class="container section">
+    <p class="kicker">Saved here</p>
+    <h1>Favorites</h1>
+    <p class="muted">Favorites stay on this phone or browser. They are not synced to other devices, and the site still works if saving is blocked.</p>
+
+    <div class="grid grid--cards" data-favorites-list>
+      {
+        cards.map((recipe) => (
+          <div data-favorite-id={recipe.id} hidden>
+            <RecipeCard recipe={recipe} />
+          </div>
+        ))
+      }
+    </div>
+
+    <div data-favorites-empty>
+      <EmptyState title="No favorites on this device yet" body="Tap the heart on a recipe card or recipe page. The heart fills so you can see it took.">
+        <p><a class="button" href="/recipes/">Find a recipe to save</a></p>
+      </EmptyState>
+    </div>
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>

@@ -1,339 +1,97 @@
-# Recipe Collection
+# Our Recipe Box
 
-A beautiful, mobile-friendly static recipe website. Recipes are stored as content files in the repository — no database needed. Just add a file, push, and the site rebuilds.
+A static, phone-first cookbook for recipes made and loved at home. There is no database, account, or editor. Each recipe is a structured file in Git. Search, filters, favorites, checklists, and serving scaling run in the browser.
+
+This is Stage 1: the site, design system, and pages, with **Banana Cake** as the only real recipe. A few clearly labelled DEMO recipes exist only so filters can be tried. Recipe import from Apple Notes is Stage 2; the workflow is documented below.
+
+## Stack
+
+- Astro + TypeScript (strict)
+- Custom CSS with design tokens
+- Lightweight client JavaScript
+- Zod-validated content collections
+- Vitest unit tests and Playwright browser tests
+- Static hosting on Vercel
+
+No runtime third-party APIs, analytics, or tracking.
+
+## Branding
+
+Change the cookbook name, subtitle, and colors in one place:
+
+- `src/data/site.ts`
+
+Type, spacing, borders, and shadows live in `src/styles/tokens.css`. The layout reads those CSS variables.
+
+## Scripts
+
+```bash
+npm install
+npm run icons          # generate apple-touch-icon and PWA icons
+npm run dev            # http://localhost:4321
+npm run check          # astro check / TypeScript
+npm run lint
+npm test               # Vitest
+npm run build
+npm run preview
+npm run test:e2e       # Playwright, builds first
+```
+
+## Adding a recipe
+
+1. Copy `src/data/recipes/_example.yml` to `src/data/recipes/your-slug.yml`.
+2. Fill in only what you know. Leave servings, times, difficulty, and similar fields out if the note does not have them. Do not invent quantities.
+3. Put a photo at `src/assets/images/recipes/your-photo.jpg` and the same file at `public/images/recipes/your-photo.jpg`. Set `image` to the filename.
+4. Run `npm run check` and `npm run build`. The build fails on missing slugs, duplicate ids, bad ingredients, or broken local image paths.
+5. Commit and push. Vercel rebuilds the static site.
+
+Files that start with `_` are templates and are not published.
+
+## Demo recipes
+
+Three labelled DEMO recipes live in `src/data/recipes/demo/`. They are trivial on purpose.
+
+To remove them:
+
+1. Delete `src/data/recipes/demo/`.
+2. Set `includeDemoRecipes: false` in `src/data/site.ts`.
+
+## Apple Notes import (Stage 2)
+
+There is no import button on the site. The content model is written to tolerate informal notes: missing quantities, paragraph instructions, “to taste”, personal comments, substitutions, mixed English and Indian names, alternate spellings, and a source URL.
+
+Suggested workflow when Stage 2 begins:
+
+1. Copy or export the note from Apple Notes.
+2. Map it onto `_example.yml`. Keep the original wording.
+3. If a line has no amount, leave `quantity` empty and set `scalable: false`.
+4. Review anything ambiguous — ranges, “some”, “a bit” — and flag it in a tip rather than guessing.
+5. Add a photo if you have one.
+6. Commit the YAML and photo.
 
 ## Features
 
-- **Magazine-style recipe pages** with hero images, structured ingredients/steps, embedded YouTube videos
-- **Fast client-side search** using Fuse.js fuzzy search across titles, ingredients, and tags
-- **Category-based filtering** with tags organized by: Meal, Cuisine, Diet, Main Ingredient, Time, Occasion
-- **Favorites** highlighting
-- **Mobile-first design** with large tap targets and readable text
-- **Fully static** — deploys to Vercel, GitHub Pages, Netlify, etc.
-- **No database, no API, no env vars** — everything is in the repo
+- Home with featured recipe, category tiles, recently added, quick meals, and favorites when they exist
+- `/recipes/` search and combined filters, shareable query params, no reload
+- Static `/recipes/[slug]/` pages with checklist, scaling, share, print, related recipes, and an optional cook mode
+- Category pages from `src/data/categories.ts`
+- `/favorites/` stored in this browser only
+- Custom 404
+- Installable from an iPhone home screen (manifest, apple-touch-icon, standalone display). Offline caching is not claimed.
 
-## Tech Stack
+Favorites, checklists, and scaling still leave the recipes readable if JavaScript or `localStorage` is unavailable.
 
-- **Next.js 14** (App Router, TypeScript, Static Export)
-- **Tailwind CSS** + **shadcn/ui** for styling
-- **Fuse.js** for client-side search
-- **Zod** for build-time schema validation
+## Deploy
 
----
+The site is static. On Vercel, connect the GitHub repo and leave the framework as Astro. Nested recipe URLs are real HTML files, so a refresh of `/recipes/banana-cake/` works.
 
-## Quick Start
+Production URL is picked up from Vercel (`VERCEL_PROJECT_PRODUCTION_URL`) for canonical links and the sitemap.
 
-### 1. Clone and Install
+## Tests
 
-```bash
-git clone <your-repo-url>
-cd recipe-collection
-npm install
-```
-
-### 2. Run Locally
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-### 3. Build for Production
-
-```bash
-npm run build
-```
-
-The static site is output to the `out/` directory.
-
----
-
-## Adding a Recipe
-
-### 1. Create the Recipe File
-
-Copy the template:
-
-```bash
-cp content/recipes/_template.mdx content/recipes/my-new-recipe.mdx
-```
-
-The filename should match your slug (e.g., `garlic-butter-shrimp.mdx` for slug `garlic-butter-shrimp`).
-
-### 2. Add an Image
-
-Create a folder for your recipe's images:
-
-```bash
-mkdir -p public/recipes/my-new-recipe
-```
-
-Add your hero image (recommended: 800x600 or similar 4:3 aspect ratio):
-
-```
-public/recipes/my-new-recipe/hero.jpg
-```
-
-Reference it in your recipe frontmatter:
-
-```yaml
-image: "/recipes/my-new-recipe/hero.jpg"
-```
-
-### 3. Fill in the Recipe
-
-Edit your `.mdx` file with the recipe details. See the template below for all available fields.
-
-### 4. Build and Deploy
-
-```bash
-npm run build  # Validates all recipes
-git add .
-git commit -m "Add garlic butter shrimp recipe"
-git push
-```
-
-The site automatically rebuilds on push (if using Vercel/Netlify).
-
----
-
-## Recipe Template
-
-```yaml
----
-title: "Recipe Title"
-slug: "recipe-slug"
-description: "A brief, enticing description."
-
-image: "/recipes/recipe-slug/hero.jpg"
-
-source_url: null  # Original recipe URL (optional)
-video_url: null   # YouTube URL for embedded video (optional)
-
-prep_time: "15 min"
-cook_time: "30 min"
-total_time: "45 min"
-servings: "4 servings"
-difficulty: easy  # easy, medium, or hard
-cuisine: "Italian"
-
-date_added: "2024-10-07"
-is_favorite: false
-
-tags:
-  meal:
-    - dinner
-  cuisine:
-    - italian
-  diet: []
-  main_ingredient:
-    - pasta
-  time:
-    - under-1-hour
-  occasion:
-    - weeknight
-
-ingredients:
-  - section: null  # null for no section header
-    items:
-      - "1 lb pasta"
-      - "2 tbsp olive oil"
-  - section: "For the Sauce"
-    items:
-      - "3 cloves garlic"
-      - "1 cup tomatoes"
-
-steps:
-  - "First step."
-  - "Second step."
-  - "Third step."
-
-tips:
-  - "Helpful tip"
-  - "Another tip"
----
-
-Optional content below frontmatter appears at bottom of recipe page.
-```
-
----
-
-## Full Recipe Example
-
-Here's a complete example you can copy:
-
-```yaml
----
-title: "Garlic Butter Shrimp Pasta"
-slug: "garlic-butter-shrimp-pasta"
-description: "Quick, flavorful weeknight pasta with succulent garlic butter shrimp. Ready in under 30 minutes!"
-
-image: "/recipes/garlic-butter-shrimp-pasta/hero.jpg"
-
-source_url: "https://example.com/shrimp-pasta"
-video_url: null
-
-prep_time: "10 min"
-cook_time: "20 min"
-total_time: "30 min"
-servings: "4 servings"
-difficulty: easy
-cuisine: "Italian"
-
-date_added: "2024-10-07"
-is_favorite: true
-
-tags:
-  meal:
-    - dinner
-  cuisine:
-    - italian
-  diet: []
-  main_ingredient:
-    - shrimp
-    - pasta
-  time:
-    - under-30-min
-  occasion:
-    - weeknight
-    - date-night
-
-ingredients:
-  - section: null
-    items:
-      - "1 lb linguine"
-      - "1 lb large shrimp, peeled and deveined"
-      - "6 cloves garlic, minced"
-      - "4 tbsp butter"
-      - "1/4 cup white wine"
-      - "Juice of 1 lemon"
-      - "Red pepper flakes to taste"
-      - "Fresh parsley, chopped"
-      - "Salt and pepper"
-
-steps:
-  - "Cook pasta according to package directions. Reserve 1 cup pasta water before draining."
-  - "Season shrimp with salt and pepper. In a large skillet, melt 2 tbsp butter over medium-high heat."
-  - "Add shrimp and cook 2-3 minutes per side until pink. Remove and set aside."
-  - "Add remaining butter and garlic to the pan. Cook 1 minute until fragrant."
-  - "Add white wine and lemon juice. Simmer 2 minutes."
-  - "Toss in pasta and shrimp. Add pasta water as needed for a silky sauce."
-  - "Season with red pepper flakes, salt, and pepper. Garnish with parsley."
-
-tips:
-  - "Don't overcook the shrimp - they cook fast!"
-  - "The pasta water is key for a glossy sauce"
-  - "Add more garlic if you're a garlic lover"
----
-```
-
----
-
-## Tag Vocabulary
-
-Tags must be from the vocabulary in `content/tags.yml`. The build fails if you use an unknown tag (this keeps tags consistent).
-
-### Available Tags by Category
-
-**Meal:** breakfast, lunch, dinner, snack, dessert, appetizer, brunch, side-dish
-
-**Cuisine:** indian, italian, mexican, chinese, thai, japanese, mediterranean, american, french, korean, vietnamese, middle-eastern, greek, spanish
-
-**Diet:** vegetarian, vegan, eggless, gluten-free, dairy-free, keto, low-carb, paleo, whole30, nut-free
-
-**Main Ingredient:** chicken, beef, pork, lamb, seafood, fish, shrimp, tofu, eggs, pasta, rice, noodles, vegetables, beans, lentils, cheese, chocolate
-
-**Time:** under-15-min, under-30-min, under-1-hour, over-1-hour, meal-prep, make-ahead, slow-cooker, instant-pot
-
-**Occasion:** weeknight, date-night, party, holiday, thanksgiving, christmas, summer, comfort-food, healthy, kid-friendly, potluck, picnic
-
-### Adding New Tags
-
-Edit `content/tags.yml` to add new tags before using them:
-
-```yaml
-cuisine:
-  - indian
-  - italian
-  - my-new-cuisine  # Add here first
-```
-
----
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import the repo in [Vercel](https://vercel.com)
-3. Deploy! (No env vars needed)
-
-Vercel will automatically rebuild when you push changes.
-
-### GitHub Pages
-
-1. Add to your `package.json`:
-   ```json
-   "scripts": {
-     "deploy": "next build && touch out/.nojekyll"
-   }
-   ```
-
-2. Push the `out/` directory to your `gh-pages` branch, or configure GitHub Actions.
-
-### Netlify
-
-1. Connect your repo to Netlify
-2. Build command: `npm run build`
-3. Publish directory: `out`
-
----
-
-## Project Structure
-
-```
-├── content/
-│   ├── recipes/           # Recipe MDX files
-│   │   ├── _template.mdx  # Copy this for new recipes
-│   │   ├── classic-butter-chicken.mdx
-│   │   └── berry-smoothie-bowl.mdx
-│   └── tags.yml           # Tag vocabulary
-├── public/
-│   └── recipes/           # Recipe images
-│       ├── classic-butter-chicken/
-│       │   └── hero.svg
-│       └── berry-smoothie-bowl/
-│           └── hero.svg
-├── src/
-│   ├── app/               # Next.js pages
-│   ├── components/        # React components
-│   └── lib/
-│       ├── recipes.ts     # Recipe loader
-│       └── schema.ts      # Zod validation schema
-└── next.config.ts         # Static export config
-```
-
----
-
-## Build Validation
-
-The build validates all recipes and fails with clear errors if:
-
-- Required fields are missing (title, slug)
-- Slug format is invalid (must be lowercase with hyphens)
-- Unknown tags are used (not in `content/tags.yml`)
-- JSON/YAML syntax errors in frontmatter
-
-Example error:
-```
-❌ my-recipe.mdx:
-  - slug: Slug must be lowercase with hyphens only
-  - Unknown tag "invalid-tag" in category "meal". Add it to content/tags.yml first.
-```
-
----
+- Unit tests cover quantity parsing, scaling, search, filters, sort, URL state, validation, and favorites storage failure.
+- Playwright covers recipe URLs, nav, filters, search, favorites, checklists, scaling, print, and the listed viewport widths.
 
 ## License
 
-MIT
+Recipe text in this repo is for the family’s home cookbook. The Banana Cake photo is a homemade loaf from the family kitchen.

@@ -1,0 +1,188 @@
+---
+import type { RecipeCardModel } from "../types/recipe";
+import { collectFilterOptions, timeFilters } from "../lib/filters";
+import { formatMealType, formatMethod } from "../lib/format";
+
+type Props = { recipes: RecipeCardModel[] };
+const { recipes } = Astro.props;
+const options = collectFilterOptions(recipes);
+---
+
+<section class="section" data-recipes-explorer>
+  <script id="recipes-data" type="application/json" set:html={JSON.stringify(recipes)} />
+  <div class="filters">
+    <label class="search-shell">
+      <span class="search-shell__icon" aria-hidden="true">⌕</span>
+      <span class="sr-only">Filter recipes</span>
+      <input data-filter-query type="search" placeholder="Search names, ingredients, cuisine…" />
+    </label>
+
+    <fieldset class="filter-group">
+      <legend>Meal</legend>
+      {options.mealTypes.map((value) => (
+        <button type="button" class="chip" data-filter="mealTypes" data-value={value} aria-pressed="false">{formatMealType(value)}</button>
+      ))}
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>Cuisine</legend>
+      {options.cuisines.map((value) => (
+        <button type="button" class="chip" data-filter="cuisines" data-value={value} aria-pressed="false">{value}</button>
+      ))}
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>Dietary</legend>
+      {options.dietary.map((value) => (
+        <button type="button" class="chip" data-filter="dietary" data-value={value} aria-pressed="false">{value}</button>
+      ))}
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>Cooking method</legend>
+      {options.methods.map((value) => (
+        <button type="button" class="chip" data-filter="methods" data-value={value} aria-pressed="false">{formatMethod(value)}</button>
+      ))}
+    </fieldset>
+
+    <fieldset class="filter-group">
+      <legend>Time</legend>
+      {timeFilters.map((value) => (
+        <button type="button" class="chip" data-filter="time" data-value={value.id} aria-pressed="false">{value.label}</button>
+      ))}
+    </fieldset>
+  </div>
+
+  <div class="toolbar">
+    <p data-result-count></p>
+    <label>
+      <span class="sr-only">Sort recipes</span>
+      <select data-sort>
+        <option value="newest">Newest</option>
+        <option value="az">A–Z</option>
+        <option value="time">Cooking time</option>
+      </select>
+    </label>
+    <button type="button" class="button-secondary" data-clear hidden>Clear all</button>
+  </div>
+
+  <div data-results></div>
+  <div class="empty" data-empty hidden>
+    <h2>No recipes match</h2>
+    <p class="muted">Try a different word or clear the filters. Ingredient names work — “paneer” will find every recipe that uses it.</p>
+    <button type="button" class="button" data-clear>Clear all</button>
+  </div>
+</section>
+
+<script>
+  import { applyFilters, defaultFilterState, hasActiveFilters, type FilterState } from "../lib/filters";
+  import { sortRecipes } from "../lib/sort";
+  import { parseRecipeQuery, serializeRecipeQuery, toggleListValue } from "../lib/url-state";
+  import type { RecipeCardModel } from "../types/recipe";
+  import { formatMealType, recipeTimeLabel } from "../lib/format";
+
+  const root = document.querySelector("[data-recipes-explorer]");
+  const dataNode = document.getElementById("recipes-data");
+  if (root && dataNode) {
+    const explorer = root;
+    const recipes = JSON.parse(dataNode.textContent ?? "[]") as RecipeCardModel[];
+    const queryInput = explorer.querySelector<HTMLInputElement>("[data-filter-query]");
+    const sortSelect = explorer.querySelector<HTMLSelectElement>("[data-sort]");
+    const results = explorer.querySelector<HTMLElement>("[data-results]");
+    const empty = explorer.querySelector<HTMLElement>("[data-empty]");
+    const count = explorer.querySelector<HTMLElement>("[data-result-count]");
+    const clearButtons = explorer.querySelectorAll<HTMLButtonElement>("[data-clear]");
+
+    let state: FilterState = { ...defaultFilterState, ...parseRecipeQuery(window.location.search) };
+    let timer = 0;
+
+    function cardHTML(recipe: RecipeCardModel): string {
+      const time = recipeTimeLabel(recipe);
+      const meal = recipe.mealTypes?.[0];
+      const image = recipe.image
+        ? `<img src="/images/recipes/${recipe.image}" alt="${recipe.imageAlt ?? ""}" width="480" height="360" loading="lazy" />`
+        : `<div class="placeholder">${recipe.title.charAt(0)}</div>`;
+      return `<article class="card" data-recipe-card="${recipe.id}">
+        <a href="/recipes/${recipe.slug}/">
+          <div class="card__media">${image}</div>
+          <div class="card__body">
+            ${recipe.demo ? `<span class="badge badge--demo">Demo</span>` : ""}
+            <h3>${recipe.title}</h3>
+            ${recipe.description ? `<p class="muted">${recipe.description}</p>` : ""}
+            <p class="card__meta">
+              ${time ? `<span>${time}</span>` : ""}
+              ${recipe.cuisine ? `<span>${recipe.cuisine}</span>` : ""}
+              ${meal ? `<span>${formatMealType(meal)}</span>` : ""}
+            </p>
+          </div>
+        </a>
+        <button type="button" class="icon-button favorite-float" data-favorite-button data-recipe-id="${recipe.id}" aria-pressed="false" aria-label="Save ${recipe.title} to favorites"><span aria-hidden="true">♡</span></button>
+      </article>`;
+    }
+
+    function syncControls() {
+      if (queryInput) queryInput.value = state.query;
+      if (sortSelect) sortSelect.value = state.sort;
+      explorer.querySelectorAll<HTMLButtonElement>("[data-filter]").forEach((button) => {
+        const key = button.dataset.filter as keyof FilterState;
+        const value = button.dataset.value ?? "";
+        const selected = Array.isArray(state[key]) && (state[key] as string[]).includes(value);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      const active = hasActiveFilters(state);
+      clearButtons.forEach((button) => {
+        button.hidden = !active;
+      });
+    }
+
+    function render() {
+      const filtered = sortRecipes(applyFilters(recipes, state), state.sort);
+      if (count) count.textContent = `${filtered.length} recipe${filtered.length === 1 ? "" : "s"}`;
+      if (results) {
+        results.innerHTML = filtered.length ? `<div class="grid grid--cards">${filtered.map(cardHTML).join("")}</div>` : "";
+      }
+      empty?.toggleAttribute("hidden", filtered.length > 0);
+      syncControls();
+      const query = serializeRecipeQuery(state);
+      const next = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
+      window.history.replaceState(state, "", next);
+      document.dispatchEvent(new Event("favorites:refresh"));
+    }
+
+    function applyUrl() {
+      state = { ...defaultFilterState, ...parseRecipeQuery(window.location.search) };
+      render();
+    }
+
+    queryInput?.addEventListener("input", () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        state = { ...state, query: queryInput.value };
+        render();
+      }, 180);
+    });
+
+    sortSelect?.addEventListener("change", () => {
+      state = { ...state, sort: sortSelect.value as FilterState["sort"] };
+      render();
+    });
+
+    explorer.addEventListener("click", (event) => {
+      const chip = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-filter]");
+      if (chip) {
+        const key = chip.dataset.filter as "mealTypes" | "cuisines" | "dietary" | "methods" | "time";
+        const value = chip.dataset.value;
+        if (!value) return;
+        state = { ...state, [key]: toggleListValue(state[key] as string[], value) } as FilterState;
+        render();
+      }
+      if ((event.target as HTMLElement).closest("[data-clear]")) {
+        state = { ...defaultFilterState };
+        render();
+      }
+    });
+
+    window.addEventListener("popstate", applyUrl);
+    applyUrl();
+  }
+</script>

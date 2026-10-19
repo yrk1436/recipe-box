@@ -1,0 +1,48 @@
+id: demo-paneer-toast
+slug: demo-paneer-toast
+title: "DEMO: Paneer Toast"
+description: A labelled demo snack so ingredient search for paneer has something to find. Delete with the other demos.
+cuisine: Indian
+mealTypes:
+  - breakfast
+  - snack
+dietaryTags:
+  - vegetarian
+tags:
+  - paneer
+  - toast
+aliases:
+  - paneer sandwich
+ingredients:
+  - quantity: "2"
+    name: bread slices
+  - quantity: "1/2"
+    unit: cup
+    name: paneer
+    prep: crumbled
+  - quantity: "1"
+    unit: tablespoon
+    name: onion
+    prep: finely chopped
+  - quantity: "1"
+    name: green chili
+    prep: optional, chopped
+    scalable: false
+  - quantity: "1"
+    unit: teaspoon
+    name: butter
+instructions:
+  - Mix the crumbled paneer with onion and green chili if using.
+  - Butter the bread and spread the paneer mixture on top.
+  - Toast on a pan until the bread is golden and the paneer is warm.
+prepTimeMinutes: 5
+cookTimeMinutes: 8
+totalTimeMinutes: 13
+servings: 1
+difficulty: easy
+cookingMethod: stovetop
+scalable: true
+demo: true
+dateAdded: "2026-10-16"
+variations:
+  - Add a pinch of chaat masala if you like it tangier.

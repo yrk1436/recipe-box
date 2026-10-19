@@ -1,0 +1,65 @@
+<script>
+  import { readFavorites, toggleFavorite } from "../lib/favorites";
+
+  function labelFor(button: HTMLButtonElement, on: boolean) {
+    const title = button.dataset.recipeTitle ?? button.getAttribute("aria-label")?.replace(/^Save |^Remove /, "").replace(/ from favorites$| to favorites$/, "") ?? "recipe";
+    return on ? `Remove ${title} from favorites` : `Save ${title} to favorites`;
+  }
+
+  let writeError: string | undefined;
+
+  function syncButtons() {
+    const result = readFavorites();
+    const error = writeError ?? result.error;
+    document.querySelectorAll<HTMLButtonElement>("[data-favorite-button]").forEach((button) => {
+      const id = button.dataset.recipeId;
+      if (!id) return;
+      const on = result.ids.includes(id);
+      button.classList.toggle("is-on", on);
+      button.setAttribute("aria-pressed", String(on));
+      button.innerHTML = `<span aria-hidden="true">${on ? "♥" : "♡"}</span>`;
+      button.setAttribute("aria-label", labelFor(button, on));
+    });
+
+    document.querySelectorAll("[data-favorites-empty]").forEach((node) => {
+      node.toggleAttribute("hidden", result.ids.length > 0);
+    });
+    document.querySelectorAll("[data-favorites-list]").forEach((node) => {
+      const cards = node.querySelectorAll<HTMLElement>("[data-favorite-id]");
+      cards.forEach((card) => {
+        const id = card.dataset.favoriteId;
+        card.hidden = !id || !result.ids.includes(id);
+      });
+      const visible = [...cards].some((card) => !card.hidden);
+      node.toggleAttribute("hidden", !visible);
+    });
+
+    let banner = document.querySelector("[data-favorites-error]");
+    if (error) {
+      if (!banner) {
+        banner = document.createElement("p");
+        banner.className = "notice";
+        banner.setAttribute("data-favorites-error", "");
+        document.querySelector("main")?.prepend(banner);
+      }
+      banner.textContent = error + " The rest of the site still works.";
+    } else {
+      banner?.remove();
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-favorite-button]");
+    if (!button) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const id = button.dataset.recipeId;
+    if (!id) return;
+    const result = toggleFavorite(id);
+    writeError = result.error;
+    syncButtons();
+  });
+
+  syncButtons();
+  window.addEventListener("storage", syncButtons);
+</script>

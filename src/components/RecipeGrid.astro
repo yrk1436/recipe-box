@@ -1,0 +1,11 @@
+---
+import type { RecipeCardModel } from "../types/recipe";
+import RecipeCard from "./RecipeCard.astro";
+
+type Props = { recipes: RecipeCardModel[] };
+const { recipes } = Astro.props;
+---
+
+<div class="grid grid--cards">
+  {recipes.map((recipe) => <RecipeCard recipe={recipe} />)}
+</div>

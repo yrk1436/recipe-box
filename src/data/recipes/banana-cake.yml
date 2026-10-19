@@ -1,0 +1,70 @@
+id: banana-cake
+slug: banana-cake
+title: Banana Cake
+subtitle: Her first and best banana cake
+description: Her first and best banana cake, baked in a loaf pan with wheat flour, butter, and walnuts.
+personalNote: From Swathi's handwritten kitchen notes.
+image: banana-cake.jpg
+imageAlt: Homemade banana walnut loaf on a wooden serving board
+cuisine: American
+mealTypes:
+  - dessert
+dietaryTags:
+  - vegetarian
+tags:
+  - banana
+  - loaf
+  - walnuts
+  - comfort-food
+  - kid-friendly
+aliases:
+  - banana bread
+  - banana loaf
+ingredients:
+  - quantity: "1 1/4"
+    unit: cups
+    name: sugar
+  - quantity: "1"
+    unit: stick
+    name: butter
+    prep: softened
+  - quantity: "2"
+    name: eggs
+  - quantity: "1/4"
+    unit: teaspoon
+    name: baking powder
+  - quantity: "1/2"
+    unit: teaspoon
+    name: baking soda
+  - quantity: "1 1/2"
+    unit: cups
+    name: wheat flour
+  - quantity: "2"
+    name: large very ripe bananas
+    prep: mashed
+  - quantity: "1/2"
+    unit: cup
+    name: nuts
+    prep: walnuts
+  - quantity: "1"
+    unit: teaspoon
+    name: vanilla
+instructions:
+  - Preheat the oven to 375°F. Grease a loaf pan.
+  - Blend the sugar, softened butter, and eggs together with a beater.
+  - In a bowl, mix the wheat flour, baking soda, baking powder, and chopped nuts.
+  - Add the dry ingredients to the wet mixture, then add the mashed bananas and vanilla. Mix until combined.
+  - Pour into the greased loaf pan. Bake at 375°F for 45 minutes.
+cookTimeMinutes: 45
+totalTimeMinutes: 60
+difficulty: easy
+cookingMethod: bake
+scalable: true
+featured: true
+dateAdded: "2026-10-07"
+tips:
+  - Use very ripe bananas for the best flavor and sweetness.
+  - Soften the butter before beating so it blends smoothly with the sugar and eggs.
+  - Walnuts are her usual nuts for this cake.
+source:
+  note: From handwritten kitchen notes
