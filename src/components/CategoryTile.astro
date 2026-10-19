@@ -1,0 +1,13 @@
+---
+type Props = {
+  href: string;
+  label: string;
+  count: number;
+};
+const { href, label, count } = Astro.props;
+---
+
+<a class="tile" href={href}>
+  <strong>{label}</strong>
+  <span>{count === 1 ? "1 recipe" : `${count} recipes`}</span>
+</a>

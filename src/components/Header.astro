@@ -1,0 +1,37 @@
+---
+import { site } from "../data/site";
+import type { RecipeCardModel } from "../types/recipe";
+import SearchBox from "./SearchBox.astro";
+
+type Props = {
+  recipes: RecipeCardModel[];
+  currentPath: string;
+};
+
+const { recipes, currentPath } = Astro.props;
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/recipes/", label: "All recipes" },
+  { href: "/categories/", label: "Categories" },
+  { href: "/favorites/", label: "Favorites" },
+];
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="wordmark" href="/">{site.name}</a>
+    <nav class="nav-desktop" aria-label="Primary">
+      {
+        links.map((link) => (
+          <a href={link.href} aria-current={currentPath === link.href ? "page" : undefined}>
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="header-search">
+      <SearchBox recipes={recipes} />
+    </div>
+  </div>
+</header>

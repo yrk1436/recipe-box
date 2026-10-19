@@ -1,0 +1,47 @@
+id: demo-mango-lassi
+slug: demo-mango-lassi
+title: "DEMO: Mango Lassi"
+description: A labelled demo drink used to exercise drink and quick-meal filters. Safe to delete.
+cuisine: Indian
+mealTypes:
+  - drink
+dietaryTags:
+  - vegetarian
+tags:
+  - mango
+  - yogurt
+aliases:
+  - lassi
+ingredients:
+  - quantity: "1"
+    unit: cup
+    name: ripe mango
+    prep: chopped
+  - quantity: "1"
+    unit: cup
+    name: plain yogurt
+  - quantity: "1/2"
+    unit: cup
+    name: cold water
+  - quantity: "1"
+    unit: teaspoon
+    name: sugar
+    prep: or to taste
+    scalable: false
+  - quantity: ""
+    name: a pinch of cardamom
+    scalable: false
+instructions:
+  - Blend the mango, yogurt, water, and sugar until smooth.
+  - Taste and add more sugar only if you want it sweeter.
+  - Pour into glasses and finish with cardamom.
+prepTimeMinutes: 10
+totalTimeMinutes: 10
+servings: 2
+difficulty: easy
+cookingMethod: no-cook
+scalable: true
+demo: true
+dateAdded: "2026-10-17"
+substitutions:
+  - Use frozen mango if fresh is not in season.

@@ -1,0 +1,20 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EmptyState from "../components/EmptyState.astro";
+import FavoritesRuntime from "../components/FavoritesRuntime.astro";
+import { getCardModels } from "../lib/recipes";
+
+const cards = await getCardModels();
+---
+
+<BaseLayout title="Page not found" recipes={cards} currentPath="/404/">
+  <section class="container section">
+    <EmptyState title="That page is not in this cookbook" body="The link may be old, or the recipe may have been renamed. Try search, or go back to the shelf.">
+      <p>
+        <a class="button" href="/">Home</a>
+        <a class="button-secondary" href="/recipes/">All recipes</a>
+      </p>
+    </EmptyState>
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>

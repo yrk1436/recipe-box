@@ -1,0 +1,55 @@
+id: demo-weeknight-dal
+slug: demo-weeknight-dal
+title: "DEMO: Weeknight Dal"
+description: A plainly labelled demo recipe so filters and search can be tried. Delete the demo folder when real recipes arrive.
+cuisine: Indian
+mealTypes:
+  - dinner
+dietaryTags:
+  - vegetarian
+tags:
+  - lentils
+  - weeknight
+aliases:
+  - dal
+  - daal
+ingredients:
+  - quantity: "1"
+    unit: cup
+    name: masoor dal
+    prep: rinsed
+  - quantity: "3"
+    unit: cups
+    name: water
+    scalable: false
+  - quantity: "1/2"
+    unit: teaspoon
+    name: turmeric
+  - quantity: "1"
+    unit: teaspoon
+    name: salt
+    prep: or to taste
+    scalable: false
+  - quantity: "1"
+    unit: tablespoon
+    name: ghee
+  - quantity: "1"
+    unit: teaspoon
+    name: cumin seeds
+instructions:
+  - Combine the rinsed dal, water, and turmeric in a pot.
+  - Simmer until the lentils are soft, about 20 minutes.
+  - Stir in salt.
+  - Heat ghee, bloom the cumin seeds, and pour over the dal.
+prepTimeMinutes: 5
+cookTimeMinutes: 20
+totalTimeMinutes: 25
+servings: 4
+difficulty: easy
+cookingMethod: stovetop
+scalable: true
+demo: true
+dateAdded: "2026-10-18"
+tips:
+  - This is a DEMO recipe. Remove src/data/recipes/demo/ and set includeDemoRecipes to false.
+storageNotes: Keeps in the fridge for 2 days.

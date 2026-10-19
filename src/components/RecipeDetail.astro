@@ -1,0 +1,382 @@
+---
+import { Image } from "astro:assets";
+import type { Recipe, RecipeCardModel } from "../types/recipe";
+import { formatMealType, formatMethod, formatMinutes, groupIngredients } from "../lib/format";
+import { getRecipeImage } from "../lib/images";
+import { recipeContentKey } from "../lib/hash";
+import { recipeIsScalable, scaleIngredients } from "../lib/scale";
+import Breadcrumbs from "./Breadcrumbs.astro";
+import FavoriteButton from "./FavoriteButton.astro";
+import PlaceholderImage from "./PlaceholderImage.astro";
+import RecipeCard from "./RecipeCard.astro";
+
+type Props = {
+  recipe: Recipe;
+  related: RecipeCardModel[];
+};
+
+const { recipe, related } = Astro.props;
+const image = getRecipeImage(recipe.image);
+const groups = groupIngredients(scaleIngredients(recipe.ingredients, 1));
+const canScale = recipeIsScalable(recipe);
+const contentKey = recipeContentKey(recipe);
+---
+
+<article class="narrow recipe-page" data-recipe-detail>
+  <script
+    id="recipe-detail-data"
+    type="application/json"
+    set:html={JSON.stringify({
+      id: recipe.id,
+      title: recipe.title,
+      servings: recipe.servings ?? null,
+      scalable: canScale,
+      contentKey,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+    })}
+  />
+
+  <Breadcrumbs
+    items={[
+      { href: "/", label: "Home" },
+      { href: "/recipes/", label: "Recipes" },
+      { label: recipe.title },
+    ]}
+  />
+
+  <p class="kicker">{recipe.cuisine ?? recipe.mealTypes?.[0] ?? "Recipe"}</p>
+  <h1>{recipe.title}</h1>
+  {recipe.subtitle && <p class="serif" style="font-size: var(--text-xl); color: var(--color-text-muted);">{recipe.subtitle}</p>}
+
+  <div class="recipe-hero">
+    {
+      image ? (
+        <Image
+          src={image}
+          alt={recipe.imageAlt ?? ""}
+          widths={[480, 768, 1024]}
+          sizes="(max-width: 767px) 100vw, 704px"
+          loading="eager"
+          fetchpriority="high"
+        />
+      ) : (
+        <PlaceholderImage title={recipe.title} />
+      )
+    }
+  </div>
+
+  {recipe.personalNote && <p class="serif" style="font-size: var(--text-lg);">{recipe.personalNote}</p>}
+  {recipe.description && <p class="muted">{recipe.description}</p>}
+
+  <div class="meta-row" style="margin: var(--space-5) 0;">
+    {recipe.cuisine && <span>{recipe.cuisine}</span>}
+    {recipe.mealTypes?.map((type) => <span>{formatMealType(type)}</span>)}
+    {recipe.prepTimeMinutes != null && <span>Prep {formatMinutes(recipe.prepTimeMinutes)}</span>}
+    {recipe.cookTimeMinutes != null && <span>Cook {formatMinutes(recipe.cookTimeMinutes)}</span>}
+    {recipe.totalTimeMinutes != null && <span>Total {formatMinutes(recipe.totalTimeMinutes)}</span>}
+    {recipe.servings != null && <span data-servings-label>{recipe.servings} servings</span>}
+    {recipe.difficulty && <span>{recipe.difficulty}</span>}
+    {recipe.cookingMethod && <span>{formatMethod(recipe.cookingMethod)}</span>}
+    {recipe.dietaryTags?.map((tag) => <span class="badge badge--diet">{tag}</span>)}
+    {recipe.demo && <span class="badge badge--demo">Demo</span>}
+  </div>
+
+  <div class="actions no-print">
+    <FavoriteButton id={recipe.id} title={recipe.title} />
+    <button type="button" class="button-secondary" data-share>Share</button>
+    <button type="button" class="button-secondary" data-print>Print</button>
+    <button type="button" class="button-secondary" data-cook>Cook mode</button>
+  </div>
+  <p class="notice" data-share-status hidden></p>
+
+  <div class="recipe-layout" style="margin-top: var(--space-8);">
+    <section class="panel">
+      <div class="section__head">
+        <h2>Ingredients</h2>
+        <button type="button" class="button-ghost" data-reset-checklist>Reset</button>
+      </div>
+      {
+        canScale && (
+          <div class="servings no-print">
+            <button type="button" class="icon-button" data-scale-down aria-label="Decrease scale">−</button>
+            <p data-scale-label>
+              {recipe.servings != null ? `${recipe.servings} servings` : "1× recipe"}
+            </p>
+            <button type="button" class="icon-button" data-scale-up aria-label="Increase scale">+</button>
+          </div>
+        )
+      }
+      <div data-ingredients>
+        {
+          groups.map((group) => (
+            <div>
+              {group.name && <h3>{group.name}</h3>}
+              {group.items.map((item, index) => (
+                <label class="ingredient">
+                  <input type="checkbox" data-ingredient-index={index} />
+                  <span>
+                    <strong data-qty>{item.displayQuantity}</strong>
+                    {item.unit ? ` ${item.unit}` : ""} {item.name}
+                    {item.prep ? `, ${item.prep}` : ""}
+                    {item.scalable === false && item.displayQuantity ? <em class="subtle"> · as written</em> : ""}
+                  </span>
+                </label>
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section>
+      <h2>Instructions</h2>
+      <ol class="steps">
+        {recipe.instructions.map((step) => <li>{step}</li>)}
+      </ol>
+
+      {
+        recipe.tips && recipe.tips.length > 0 && (
+          <section class="panel" style="margin-top: var(--space-8);">
+            <h2>Tips</h2>
+            <ul>
+              {recipe.tips.map((tip) => <li>{tip}</li>)}
+            </ul>
+          </section>
+        )
+      }
+      {
+        recipe.substitutions && recipe.substitutions.length > 0 && (
+          <section class="panel" style="margin-top: var(--space-6);">
+            <h2>Substitutions</h2>
+            <ul>
+              {recipe.substitutions.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        )
+      }
+      {
+        recipe.variations && recipe.variations.length > 0 && (
+          <section class="panel" style="margin-top: var(--space-6);">
+            <h2>Variations</h2>
+            <ul>
+              {recipe.variations.map((item) => <li>{item}</li>)}
+            </ul>
+          </section>
+        )
+      }
+      {
+        recipe.storageNotes && (
+          <section class="panel" style="margin-top: var(--space-6);">
+            <h2>Storage</h2>
+            <p>{recipe.storageNotes}</p>
+          </section>
+        )
+      }
+      {
+        recipe.source && (
+          <section style="margin-top: var(--space-6);">
+            <h2>Source</h2>
+            {recipe.source.name && <p>{recipe.source.name}</p>}
+            {recipe.source.note && <p class="muted">{recipe.source.note}</p>}
+            {recipe.source.url && (
+              <p>
+                <a href={recipe.source.url}>{recipe.source.url}</a>
+              </p>
+            )}
+            {recipe.source.imageCredit && <p class="subtle">Photo: {recipe.source.imageCredit}</p>}
+          </section>
+        )
+      }
+    </section>
+  </div>
+
+  <p style="margin-top: var(--space-8);"><a href="/recipes/">Back to all recipes</a></p>
+
+  {
+    related.length > 0 && (
+      <section class="related section">
+        <div class="section__head">
+          <h2>Related recipes</h2>
+        </div>
+        <div class="grid grid--cards">
+          {related.map((item) => <RecipeCard recipe={item} />)}
+        </div>
+      </section>
+    )
+  }
+</article>
+
+<div class="cooking-mode" data-cooking-mode hidden>
+  <button type="button" class="button-secondary no-print" data-close-cook>Close</button>
+  <p class="kicker" style="margin-top: var(--space-6);">Cooking mode</p>
+  <div data-cook-step></div>
+  <div class="actions" style="margin-top: var(--space-8);">
+    <button type="button" class="button-secondary" data-prev-step>Previous</button>
+    <button type="button" class="button" data-next-step>Next</button>
+  </div>
+</div>
+
+<script>
+  import { checklistKey, clearChecklist, readChecklist, writeChecklist } from "../lib/checklist";
+  import { formatIngredientLine, scaleFactorFromServings, scaleIngredients } from "../lib/scale";
+  import type { Ingredient } from "../types/recipe";
+
+  const data = JSON.parse(document.getElementById("recipe-detail-data")?.textContent ?? "null") as {
+    id: string;
+    title: string;
+    servings: number | null;
+    scalable: boolean;
+    contentKey: string;
+    ingredients: Ingredient[];
+    instructions: string[];
+  } | null;
+
+  if (data) {
+    const recipeData = data;
+    const key = checklistKey({
+      id: recipeData.id,
+      ingredients: recipeData.ingredients,
+      instructions: recipeData.instructions,
+    });
+    const list = document.querySelector("[data-ingredients]");
+    const boxes = () => [...(list?.querySelectorAll<HTMLInputElement>("input[type=checkbox]") ?? [])];
+    let scale = 1;
+    let currentServings = recipeData.servings ?? 1;
+    let cookIndex = 0;
+    let wakeLock: WakeLockSentinel | null = null;
+
+    function syncChecklist() {
+      const checked = new Set(readChecklist(key));
+      boxes().forEach((box, index) => {
+        box.checked = checked.has(index);
+        box.closest(".ingredient")?.classList.toggle("is-checked", box.checked);
+      });
+    }
+
+    function saveChecklist() {
+      writeChecklist(
+        key,
+        boxes()
+          .map((box, index) => (box.checked ? index : -1))
+          .filter((index) => index >= 0),
+      );
+      syncChecklist();
+    }
+
+    function renderIngredients() {
+      const factor = recipeData.servings != null ? scaleFactorFromServings(recipeData.servings, currentServings) : scale;
+      const scaled = scaleIngredients(recipeData.ingredients, factor);
+      if (!list) return;
+      const groups: { name?: string; items: { html: string }[] }[] = [];
+      scaled.forEach((item, index) => {
+        const line = formatIngredientLine(item);
+        const note = item.scalable === false && item.displayQuantity ? ` <em class="subtle">· as written</em>` : "";
+        const html = `<label class="ingredient"><input type="checkbox" data-ingredient-index="${index}" /><span>${line}${note}</span></label>`;
+        const last = groups[groups.length - 1];
+        if (last && last.name === item.group) last.items.push({ html });
+        else groups.push({ name: item.group, items: [{ html }] });
+      });
+      list.innerHTML = groups
+        .map((group) => `${group.name ? `<h3>${group.name}</h3>` : ""}${group.items.map((item) => item.html).join("")}`)
+        .join("");
+      const label = document.querySelector("[data-scale-label]");
+      if (label) {
+        label.textContent = recipeData.servings != null ? `${currentServings} servings` : `${factor}× recipe`;
+      }
+      const servingsLabel = document.querySelector("[data-servings-label]");
+      if (servingsLabel && recipeData.servings != null) servingsLabel.textContent = `${currentServings} servings`;
+      syncChecklist();
+    }
+
+    list?.addEventListener("change", saveChecklist);
+    document.querySelector("[data-reset-checklist]")?.addEventListener("click", () => {
+      clearChecklist(key);
+      syncChecklist();
+    });
+
+    document.querySelector("[data-scale-up]")?.addEventListener("click", () => {
+      if (recipeData.servings != null) currentServings += 1;
+      else scale = scale < 1 ? 1 : scale + 1;
+      renderIngredients();
+    });
+    document.querySelector("[data-scale-down]")?.addEventListener("click", () => {
+      if (recipeData.servings != null) currentServings = Math.max(1, currentServings - 1);
+      else scale = scale > 1 ? scale - 1 : 0.5;
+      renderIngredients();
+    });
+
+    const shareStatus = document.querySelector<HTMLElement>("[data-share-status]");
+    document.querySelector("[data-share]")?.addEventListener("click", async () => {
+      const payload = { title: recipeData.title, url: window.location.href, text: recipeData.title };
+      try {
+        if (navigator.share) {
+          await navigator.share(payload);
+          return;
+        }
+        await navigator.clipboard.writeText(window.location.href);
+        if (shareStatus) {
+          shareStatus.hidden = false;
+          shareStatus.textContent = "Link copied.";
+        }
+      } catch {
+        if (shareStatus) {
+          shareStatus.hidden = false;
+          shareStatus.textContent = "Copy this page URL from the address bar.";
+        }
+      }
+    });
+
+    document.querySelector("[data-print]")?.addEventListener("click", () => window.print());
+
+    const mode = document.querySelector<HTMLElement>("[data-cooking-mode]");
+    const stepNode = document.querySelector("[data-cook-step]");
+
+    async function requestWake() {
+      try {
+        if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen");
+      } catch {
+        wakeLock = null;
+      }
+    }
+
+    function releaseWake() {
+      wakeLock?.release().catch(() => undefined);
+      wakeLock = null;
+    }
+
+    function renderCook() {
+      if (!stepNode) return;
+      const step = recipeData.instructions[cookIndex];
+      stepNode.innerHTML = `<p class="subtle">Step ${cookIndex + 1} of ${recipeData.instructions.length}</p><h2>${step}</h2>`;
+    }
+
+    document.querySelector("[data-cook]")?.addEventListener("click", () => {
+      if (!mode) return;
+      mode.hidden = false;
+      cookIndex = 0;
+      renderCook();
+      requestWake();
+      (mode.querySelector("button") as HTMLButtonElement | null)?.focus();
+    });
+    document.querySelector("[data-close-cook]")?.addEventListener("click", () => {
+      if (!mode) return;
+      mode.hidden = true;
+      releaseWake();
+    });
+    document.querySelector("[data-next-step]")?.addEventListener("click", () => {
+      cookIndex = Math.min(recipeData.instructions.length - 1, cookIndex + 1);
+      renderCook();
+    });
+    document.querySelector("[data-prev-step]")?.addEventListener("click", () => {
+      cookIndex = Math.max(0, cookIndex - 1);
+      renderCook();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && mode && !mode.hidden) requestWake();
+    });
+
+    renderIngredients();
+  }
+</script>

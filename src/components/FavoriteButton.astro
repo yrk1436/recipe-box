@@ -1,0 +1,20 @@
+---
+type Props = {
+  id: string;
+  title: string;
+  floating?: boolean;
+};
+const { id, title, floating } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={["icon-button", floating && "favorite-float"]}
+  data-favorite-button
+  data-recipe-id={id}
+  data-recipe-title={title}
+  aria-pressed="false"
+  aria-label={`Save ${title} to favorites`}
+>
+  <span aria-hidden="true">♡</span>
+</button>

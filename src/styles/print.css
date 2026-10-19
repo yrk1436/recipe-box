@@ -1,0 +1,50 @@
+@media print {
+  .site-header,
+  .bottom-nav,
+  .site-footer,
+  .skip-link,
+  .actions,
+  .favorite-float,
+  .recipe-hero,
+  .crumbs,
+  .related,
+  .no-print,
+  .cooking-mode,
+  nav {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+    font-size: 12pt;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .recipe-print-title {
+    display: block !important;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .panel,
+  .card,
+  .featured {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+  }
+
+  .ingredient input {
+    appearance: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 1px solid #333;
+  }
+}

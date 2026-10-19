@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RecipesExplorer from "../../components/RecipesExplorer.astro";
+import RecipeGrid from "../../components/RecipeGrid.astro";
+import FavoritesRuntime from "../../components/FavoritesRuntime.astro";
+import { getCardModels } from "../../lib/recipes";
+import { site } from "../../data/site";
+
+const cards = await getCardModels();
+---
+
+<BaseLayout
+  title="All recipes"
+  description={`Every recipe in ${site.name}, searchable by name, ingredient, cuisine, and tag.`}
+  recipes={cards}
+  currentPath="/recipes/"
+>
+  <section class="container section">
+    <p class="kicker">The shelf</p>
+    <h1>All recipes</h1>
+    <p class="muted">Search across titles, ingredients, notes, cuisine, and tags. Filters combine. This page updates without reloading.</p>
+    <noscript>
+      <RecipeGrid recipes={cards} />
+    </noscript>
+    <RecipesExplorer recipes={cards} />
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>

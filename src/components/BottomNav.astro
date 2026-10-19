@@ -1,0 +1,21 @@
+---
+type Props = { currentPath: string };
+const { currentPath } = Astro.props;
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/recipes/", label: "Recipes" },
+  { href: "/categories/", label: "Categories" },
+  { href: "/favorites/", label: "Favorites" },
+];
+---
+
+<nav class="bottom-nav" aria-label="Mobile">
+  {
+    links.map((link) => (
+      <a href={link.href} aria-current={currentPath === link.href ? "page" : undefined}>
+        {link.label}
+      </a>
+    ))
+  }
+</nav>

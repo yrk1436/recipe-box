@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RecipeDetail from "../../components/RecipeDetail.astro";
+import FavoritesRuntime from "../../components/FavoritesRuntime.astro";
+import { getAllRecipes, getRecipeBySlug, toCardModel } from "../../lib/recipes";
+import { relatedRecipes } from "../../lib/related";
+import { publicRecipeImagePath } from "../../lib/images";
+
+export async function getStaticPaths() {
+  const recipes = await getAllRecipes();
+  return recipes.map((recipe) => ({ params: { slug: recipe.slug } }));
+}
+
+const { slug } = Astro.params;
+const recipe = slug ? await getRecipeBySlug(slug) : undefined;
+if (!recipe) {
+  throw new Error(`Unknown recipe slug: ${slug ?? "(empty)"}`);
+}
+
+const all = await getAllRecipes();
+const related = relatedRecipes(recipe, all).map(toCardModel);
+const cards = all.map(toCardModel);
+---
+
+<BaseLayout
+  title={recipe.title}
+  description={recipe.description ?? recipe.personalNote ?? `A home recipe for ${recipe.title}.`}
+  recipes={cards}
+  currentPath={`/recipes/${recipe.slug}/`}
+  image={publicRecipeImagePath(recipe.image)}
+>
+  <RecipeDetail recipe={recipe} related={related} />
+  <FavoritesRuntime />
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import { Image } from "astro:assets";
+import type { RecipeCardModel } from "../types/recipe";
+import { formatMealType, recipeTimeLabel } from "../lib/format";
+import { getRecipeImage } from "../lib/images";
+import FavoriteButton from "./FavoriteButton.astro";
+import PlaceholderImage from "./PlaceholderImage.astro";
+
+type Props = { recipe: RecipeCardModel };
+const { recipe } = Astro.props;
+const image = getRecipeImage(recipe.image);
+const time = recipeTimeLabel(recipe);
+const meal = recipe.mealTypes?.[0];
+---
+
+<article class="card">
+  <a href={`/recipes/${recipe.slug}/`}>
+    <div class="card__media">
+      {
+        image ? (
+          <Image
+            src={image}
+            alt={recipe.imageAlt ?? ""}
+            widths={[320, 480, 768]}
+            sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 360px"
+          />
+        ) : (
+          <PlaceholderImage title={recipe.title} />
+        )
+      }
+    </div>
+    <div class="card__body">
+      {recipe.demo && <span class="badge badge--demo">Demo</span>}
+      <h3>{recipe.title}</h3>
+      {
+        recipe.description && (
+          <p class="muted">{recipe.description}</p>
+        )
+      }
+      <p class="card__meta">
+        {time && <span>{time}</span>}
+        {recipe.cuisine && <span>{recipe.cuisine}</span>}
+        {meal && <span>{formatMealType(meal)}</span>}
+      </p>
+    </div>
+  </a>
+  <FavoriteButton id={recipe.id} title={recipe.title} floating />
+</article>

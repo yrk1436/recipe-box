@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import CategoryTile from "../../components/CategoryTile.astro";
+import EmptyState from "../../components/EmptyState.astro";
+import FavoritesRuntime from "../../components/FavoritesRuntime.astro";
+import { getAllRecipes, getCardModels, getVisibleCategories } from "../../lib/recipes";
+import { site } from "../../data/site";
+
+const recipes = await getAllRecipes();
+const cards = await getCardModels();
+const categories = getVisibleCategories(recipes);
+---
+
+<BaseLayout
+  title="Categories"
+  description={`Browse ${site.name} by meal, cuisine, diet, and time.`}
+  recipes={cards}
+  currentPath="/categories/"
+>
+  <section class="container section">
+    <p class="kicker">Find a starting point</p>
+    <h1>Categories</h1>
+    <p class="muted">These tiles come from one category list. Empty categories stay hidden unless the site is configured to always show them.</p>
+    {
+      categories.length > 0 ? (
+        <div class="grid grid--tiles">
+          {categories.map((category) => (
+            <CategoryTile href={`/categories/${category.id}/`} label={category.label} count={category.count} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState title="No categories yet" body="When recipes are added, meal and cuisine tiles will appear here." />
+      )
+    }
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RecipeGrid from "../../components/RecipeGrid.astro";
+import EmptyState from "../../components/EmptyState.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import FavoritesRuntime from "../../components/FavoritesRuntime.astro";
+import { categories, getCategory } from "../../data/categories";
+import { getAllRecipes, getCardModels, recipesForCategory, toCardModel } from "../../lib/recipes";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.id } }));
+}
+
+const { slug } = Astro.params;
+const category = slug ? getCategory(slug) : undefined;
+if (!category) {
+  throw new Error(`Unknown category: ${slug ?? "(empty)"}`);
+}
+
+const all = await getAllRecipes();
+const recipes = recipesForCategory(all, category.id).map(toCardModel);
+const cards = await getCardModels();
+---
+
+<BaseLayout
+  title={category.label}
+  description={category.description}
+  recipes={cards}
+  currentPath={`/categories/${category.id}/`}
+>
+  <section class="container section">
+    <Breadcrumbs
+      items={[
+        { href: "/", label: "Home" },
+        { href: "/categories/", label: "Categories" },
+        { label: category.label },
+      ]}
+    />
+    <p class="kicker">Category</p>
+    <h1>{category.label}</h1>
+    <p class="muted">{category.description}</p>
+    {
+      recipes.length > 0 ? (
+        <RecipeGrid recipes={recipes} />
+      ) : (
+        <EmptyState title="Nothing here yet" body="This category is ready. It will show recipes as soon as one matches.">
+          <p><a class="button-secondary" href="/recipes/">Browse all recipes</a></p>
+        </EmptyState>
+      )
+    }
+  </section>
+  <FavoritesRuntime />
+</BaseLayout>
