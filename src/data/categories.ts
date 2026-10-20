@@ -81,6 +81,13 @@ export const categories: CategoryDefinition[] = [
   },
 ];
 
+/** First token of a cuisine label, so "Indian (Andhra/Telugu)" still counts as Indian. */
+export function cuisineFamily(value?: string): string | undefined {
+  if (!value) return undefined;
+  const token = value.trim().split(/[\s(/]/)[0];
+  return token ? token.toLowerCase() : undefined;
+}
+
 export function recipeMatchesCategory(recipe: Recipe, category: CategoryDefinition): boolean {
   const { match } = category;
 
@@ -88,11 +95,11 @@ export function recipeMatchesCategory(recipe: Recipe, category: CategoryDefiniti
     return false;
   }
 
-  if (match.cuisine && recipe.cuisine?.toLowerCase() !== match.cuisine.toLowerCase()) {
+  if (match.cuisine && cuisineFamily(recipe.cuisine) !== cuisineFamily(match.cuisine)) {
     return false;
   }
 
-  if (match.cuisineNot && recipe.cuisine?.toLowerCase() === match.cuisineNot.toLowerCase()) {
+  if (match.cuisineNot && cuisineFamily(recipe.cuisine) === cuisineFamily(match.cuisineNot)) {
     return false;
   }
 

@@ -1,0 +1,58 @@
+id: soft-mysore-pak
+slug: soft-mysore-pak
+title: Soft Mysore Pak
+subtitle: Soft ghee Mysore pak from Karnataka
+description: Soft ghee Mysore pak from her notes — roasted besan cooked in one-string sugar syrup with hot ghee until a small ball is no longer sticky.
+personalNote: From her Apple Notes.
+image: soft-mysore-pak.jpg
+imageAlt: Soft golden Mysore pak pieces with a porous texture
+cuisine: Indian (Karnataka)
+mealTypes:
+  - dessert
+dietaryTags:
+  - vegetarian
+  - gluten-free
+tags:
+  - sweet
+  - Diwali
+  - festival
+  - Karnataka
+  - ghee
+aliases:
+  - Mysorepak
+  - Mysore Paak
+  - Mysore Pa
+  - Ghee Mysore Pak
+ingredients:
+  - quantity: "1"
+    unit: cup
+    name: besan
+    prep: chickpea flour
+  - quantity: "1 to 1.5"
+    unit: cups
+    name: ghee
+    prep: 1/2 cup used first, remaining added hot later
+  - quantity: "1 1/4"
+    unit: cup
+    name: sugar
+  - quantity: "1/2"
+    unit: cup
+    name: water
+instructions:
+  - First roast besan for 5 min on low flame and then sieve it.
+  - To 1/2 cup hot ghee add the besan and mix it with no lump. Keep it aside.
+  - "On a non-stick pan prepare the sugar syrup. One string consistency. (Added: use the 1 1/4 cup sugar and 1/2 cup water.)"
+  - Now add the besan mix and keep stirring in low flame. Keep adding remaining hot ghee until it's fully dissolved.
+  - It is ready when it's not sticky to your hands when you make a small ball.
+  - Pour this into a greased pan and allow it to settle and cool down.
+cookingMethod: stovetop
+scalable: true
+dateAdded: "2026-10-20"
+tips:
+  - "Added (how to test one-string consistency): take a cooled drop of syrup between your thumb and index finger and pull them apart — you should see a single thread. If the syrup goes past this stage, the pak can turn hard. From Swasthi's Recipes, https://www.indianhealthyrecipes.com/mysore-pak-recipe/"
+  - "Added (cutting): after pouring, let it firm for a few minutes, then cut into pieces while still slightly warm, before it sets fully. From Swasthi's soft ghee Mysore pak and Tarla Dalal, https://www.indianhealthyrecipes.com/soft-ghee-mysore-pak/ · https://www.tarladalal.com/mysore-pak-2043r"
+  - "Added: marked gluten-free by the written ingredients — besan (chickpea flour), ghee, sugar, and water."
+source:
+  name: Household note
+  note: From her Apple Notes. The method is hers. Tips marked “Added” come from standard recipes and do not change her steps.
+  imageCredit: "Jagisnowjughead, Wikimedia Commons, CC BY-SA 4.0. Cropped. https://commons.wikimedia.org/wiki/File:South_Indian_sweets_or_dessert_called_Mysore_pak_made_from_gram_flour,_powdered_sugar_and_clarified_butter.jpg · https://creativecommons.org/licenses/by-sa/4.0/"

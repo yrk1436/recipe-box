@@ -2,7 +2,7 @@
 
 A static, phone-first cookbook for recipes made and loved at home. There is no database, account, or editor. Each recipe is a structured file in Git. Search, filters, favorites, checklists, and serving scaling run in the browser.
 
-This is Stage 1: the site, design system, and pages, with **Banana Cake** as the only real recipe. A few clearly labelled DEMO recipes exist only so filters can be tried. Recipe import from Apple Notes is Stage 2; the workflow is documented below.
+This is Stage 1: the site, design system, and pages, with **Banana Cake**, **Jenthikulu**, and **Soft Mysore Pak** as the real household recipes. A few clearly labelled DEMO recipes exist only so filters can be tried. Recipe import from Apple Notes is Stage 2; the workflow is documented below.
 
 ## Stack
 
@@ -94,4 +94,4 @@ Production URL is picked up from Vercel (`VERCEL_PROJECT_PRODUCTION_URL`) for ca
 
 ## License
 
-Recipe text in this repo is for the family’s home cookbook. The Banana Cake photo is a homemade loaf from the family kitchen.
+Recipe text in this repo is for the family’s home cookbook. The Banana Cake photo is a homemade loaf from the family kitchen. Other recipe photos are credited on each recipe page.

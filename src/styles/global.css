@@ -102,7 +102,15 @@ p:last-child {
 
 .narrow {
   width: min(100% - 2rem, var(--width-narrow));
+  max-width: calc(100% - 2rem);
   margin-inline: auto;
+}
+
+.recipe-page,
+.recipe-page p,
+.recipe-page li,
+.recipe-page a {
+  overflow-wrap: anywhere;
 }
 
 .kicker {
