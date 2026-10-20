@@ -12,6 +12,8 @@ const viewports = [
 
 const recipeSlugs = [
   "banana-cake",
+  "jenthikulu",
+  "soft-mysore-pak",
   "demo-weeknight-dal",
   "demo-mango-lassi",
   "demo-paneer-toast",

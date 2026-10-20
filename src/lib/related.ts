@@ -1,3 +1,4 @@
+import { cuisineFamily } from "../data/categories";
 import type { Recipe } from "../types/recipe";
 import { normalizeSearch } from "./search";
 
@@ -11,7 +12,10 @@ export function relatedRecipes(recipe: Recipe, all: Recipe[], limit = 3): Recipe
     .filter((candidate) => candidate.id !== recipe.id)
     .map((candidate) => {
       let score = 0;
-      if (recipe.cuisine && candidate.cuisine === recipe.cuisine) score += 3;
+      if (recipe.cuisine && candidate.cuisine && recipe.cuisine === candidate.cuisine) score += 3;
+      else if (cuisineFamily(recipe.cuisine) && cuisineFamily(recipe.cuisine) === cuisineFamily(candidate.cuisine)) {
+        score += 2;
+      }
       score += (recipe.mealTypes ?? []).filter((type) => candidate.mealTypes?.includes(type)).length * 2;
       score += (recipe.dietaryTags ?? []).filter((tag) => candidate.dietaryTags?.includes(tag)).length;
       score += (recipe.tags ?? []).filter((tag) => candidate.tags?.includes(tag)).length;

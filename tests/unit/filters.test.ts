@@ -16,6 +16,18 @@ describe("combined filters", () => {
     expect(matches.map((item) => item.id)).toEqual(["demo-weeknight-dal"]);
   });
 
+  it("treats Indian (Andhra/Telugu) as Indian", () => {
+    const regional = {
+      ...allFixtures[0]!,
+      id: "jenthikulu",
+      slug: "jenthikulu",
+      cuisine: "Indian (Andhra/Telugu)",
+      mealTypes: ["snack" as const],
+    };
+    const matches = applyFilters([regional], { ...defaultFilterState, cuisines: ["Indian"] });
+    expect(matches.map((item) => item.id)).toEqual(["jenthikulu"]);
+  });
+
   it("does not match recipes whose time is unknown against a time filter", () => {
     const unknownTime = {
       ...allFixtures[0]!,

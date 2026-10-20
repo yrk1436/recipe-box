@@ -1,0 +1,78 @@
+id: jenthikulu
+slug: jenthikulu
+title: Jenthikulu
+subtitle: Andhra / Telugu jantikalu
+description: Crunchy Andhra jantikalu pressed into hot oil — a festival murukku made from her rice flour, besan, minappapu, and sabudana mix.
+personalNote: "10 green chilies very mild spice. In mixie add water . Filter it when adding to pindi"
+image: jenthikulu.jpg
+imageAlt: Golden spiral jantikalu, also called murukku, on a wooden board
+cuisine: Indian (Andhra/Telugu)
+mealTypes:
+  - snack
+dietaryTags:
+  - vegetarian
+tags:
+  - Diwali
+  - festival snack
+  - crunchy
+  - savory
+  - Andhra
+  - Telugu
+  - deep-fried
+aliases:
+  - Janthikalu
+  - Jantikalu
+  - Murukku
+  - Chakli
+  - Jenthikalu
+ingredients:
+  - quantity: "2"
+    unit: cups
+    name: rice flour
+  - quantity: "3/4"
+    unit: cup
+    name: besan
+    prep: chickpea flour
+  - quantity: "2"
+    unit: tsp
+    name: minappapu (urad dal)
+  - quantity: "2"
+    unit: tsp
+    name: sabudana (sago / tapioca pearls)
+  - name: mirchi ginger paste (green chili–ginger paste)
+    scalable: false
+  - name: vaamu (ajwain / carom seeds)
+    scalable: false
+  - name: nuvvulu (sesame seeds)
+    scalable: false
+  - quantity: "2"
+    unit: tbsp
+    name: soft butter
+  - name: salt
+    prep: to taste
+    group: Added (not in the original note)
+    scalable: false
+  - name: oil
+    prep: for deep frying
+    group: Added (not in the original note)
+    scalable: false
+instructions:
+  - "Her Apple Notes list had ingredients and a chili tip only. These steps follow the standard Andhra/Telugu jantikalu method and are written to match her ingredients — they are not from her note."
+  - Dry-roast the minappapu (urad dal) and sabudana (sago / tapioca pearls) until aromatic. Cool, then grind both to a fine powder.
+  - Mix the rice flour, besan, roasted minappapu–sabudana powder, vaamu (ajwain / carom seeds), nuvvulu (sesame seeds), salt, and soft butter.
+  - Make the mirchi ginger paste — grind green chilies with ginger and water in a mixie (mixer grinder), then filter / strain the liquid into the pindi (flour / dough).
+  - Knead a soft dough.
+  - Heat oil for deep frying. Press the dough through a murukku / jantikalu press fitted with the star plate, directly into the hot oil.
+  - Fry on medium heat until the bubbling stops and the jenthikulu are crisp.
+  - Drain, cool, and store in an airtight container.
+cookingMethod: fry
+scalable: true
+dateAdded: "2026-10-20"
+tips:
+  - "10 green chilies very mild spice. In mixie add water . Filter it when adding to pindi"
+  - "Clearer wording of her tip: grind about 10 green chilies with ginger and water in the mixer (this makes it very mildly spicy), then strain the liquid into the flour."
+source:
+  name: Household note, with method filled in from standard Andhra/Telugu jantikalu recipes
+  url: https://www.indianhealthyrecipes.com/murukulu-murukku-recipe-jantikalu/
+  note: "Her note listed ingredients and the chili tip only. The method was filled in from standard Andhra/Telugu jantikalu recipes so it matches her list (roast and grind urad dal and sabudana; mix with rice flour, besan, ajwain, sesame, salt, and butter; add strained chili-ginger water; press with a star plate into hot oil; fry until bubbling stops). Sources: https://www.indianhealthyrecipes.com/murukulu-murukku-recipe-jantikalu/ · https://www.southindianfoods.in/andhra-murukku-spicy-chakli-jantikalu-how-to-make-step-by-step-photos.html · https://kitchenflavours.net/jantikalu/"
+  imageCredit: "Krishna Prasad, Pexels (free Pexels License). Cropped. https://www.pexels.com/photo/close-up-of-baking-on-tray-12865863/"

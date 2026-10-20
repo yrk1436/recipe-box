@@ -1,4 +1,4 @@
-import { effectiveTotalTime } from "../data/categories";
+import { cuisineFamily, effectiveTotalTime } from "../data/categories";
 import type { CookingMethod, DietaryTag, MealType, Recipe, RecipeCardModel } from "../types/recipe";
 import { matchesQuery } from "./search";
 
@@ -56,7 +56,12 @@ function matchesTime(recipe: FilterableRecipe, selected: TimeFilterId[]): boolea
 export function matchesFilters(recipe: FilterableRecipe, filters: FilterState): boolean {
   if (!matchesQuery(recipe, filters.query)) return false;
   if (!hasAny(filters.mealTypes, recipe.mealTypes)) return false;
-  if (!hasAny(filters.cuisines.map((item) => item.toLowerCase()), recipe.cuisine?.toLowerCase())) {
+  if (
+    !hasAny(
+      filters.cuisines.map((item) => cuisineFamily(item)).filter((item): item is string => Boolean(item)),
+      cuisineFamily(recipe.cuisine),
+    )
+  ) {
     return false;
   }
   if (!hasAny(filters.dietary, recipe.dietaryTags)) return false;
@@ -88,7 +93,10 @@ export function collectFilterOptions(recipes: FilterableRecipe[]) {
 
   for (const recipe of recipes) {
     recipe.mealTypes?.forEach((item) => mealTypes.add(item));
-    if (recipe.cuisine) cuisines.add(recipe.cuisine);
+    if (recipe.cuisine) {
+      const family = recipe.cuisine.trim().split(/[\s(/]/)[0];
+      cuisines.add(family || recipe.cuisine);
+    }
     recipe.dietaryTags?.forEach((item) => dietary.add(item));
     if (recipe.cookingMethod) methods.add(recipe.cookingMethod);
   }
