@@ -153,6 +153,8 @@ export function toCardModel(recipe: Recipe): RecipeCardModel {
     featured: recipe.featured,
     cookingMethod: recipe.cookingMethod,
     demo: recipe.demo,
-    ingredientNames: recipe.ingredients.map((item) => item.name),
+    ingredientNames: recipe.ingredients.map((item) =>
+      [item.name, item.prep].filter(Boolean).join(" "),
+    ),
   };
 }

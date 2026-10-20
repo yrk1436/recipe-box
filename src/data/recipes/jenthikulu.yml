@@ -35,20 +35,15 @@ ingredients:
     prep: chickpea flour
   - quantity: "2"
     unit: tsp
-    name: minappapu
-    prep: urad dal
+    name: minappapu (urad dal)
   - quantity: "2"
     unit: tsp
-    name: sabudana
-    prep: sago / tapioca pearls
-  - name: mirchi ginger paste
-    prep: green chili–ginger paste
+    name: sabudana (sago / tapioca pearls)
+  - name: mirchi ginger paste (green chili–ginger paste)
     scalable: false
-  - name: vaamu
-    prep: ajwain / carom seeds
+  - name: vaamu (ajwain / carom seeds)
     scalable: false
-  - name: nuvvulu
-    prep: sesame seeds
+  - name: nuvvulu (sesame seeds)
     scalable: false
   - quantity: "2"
     unit: tbsp
