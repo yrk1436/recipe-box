@@ -1,0 +1,61 @@
+id: chatpata-chicken
+slug: chatpata-chicken
+title: Chatpata Chicken
+subtitle: Air-fried
+description: Her marinade of salt, karam, pasupu, chicken masala, ginger garlic paste, lemon, corn flour, and besan, then air-fried.
+personalNote: From Swathi's kitchen notes. She air-fried this, and it tasted good.
+image: chatpata-chicken.jpg
+imageAlt: Overhead view of homemade air-fried chatpata chicken — bite-sized reddish-orange pieces with onion slices filling a white bowl on a gray countertop
+cuisine: Indian
+mealTypes:
+  - snack
+  - dinner
+tags:
+  - chicken
+  - air-fryer
+  - savory
+aliases:
+  - Chatpata Chicken Bites
+  - air fryer chatpata chicken
+ingredients:
+  - name: salt
+    group: Marinade
+    scalable: false
+  - name: karam (chili powder)
+    group: Marinade
+    scalable: false
+  - name: pasupu (turmeric)
+    group: Marinade
+    scalable: false
+  - name: any chicken masala
+    prep: I used tandoori masala
+    group: Marinade
+    scalable: false
+  - name: ginger garlic paste
+    group: Marinade
+    scalable: false
+  - name: lemon
+    group: Marinade
+    scalable: false
+  - name: corn flour
+    group: Marinade
+    scalable: false
+  - name: besan (chickpea flour)
+    group: Marinade
+    scalable: false
+  - name: oil
+    prep: for marination
+    group: Marinade
+    scalable: false
+instructions:
+  - Marinate with the listed ingredients and oil.
+  - Preheat the air fryer to 425°F.
+  - Air fry for 20 minutes.
+cookTimeMinutes: 20
+scalable: false
+dateAdded: "2026-11-11"
+source:
+  name: My Food Story
+  url: https://myfoodstory.com/chatpata-chicken-bites/
+  note: Swathi originally followed “Chatpata Chicken Bites – Made healthy in the Air fryer” by Richa on My Food Story (article written by Urvi Dalal). The marinade and air-fry steps on this page are from her kitchen notes.
+  imageCredit: Family photo of Swathi's homemade air-fried chatpata chicken
