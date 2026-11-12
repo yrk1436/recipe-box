@@ -118,13 +118,18 @@ test.describe("recipe URLs and navigation", () => {
     const response = await page.goto("/recipes/chatpata-chicken/");
     expect(response?.status()).toBe(200);
     await expect(page.getByRole("heading", { name: "Chatpata Chicken" })).toBeVisible();
+    await expect(page.getByText(/Chicken marinated with salt/)).toBeVisible();
+    await expect(page.getByText("Her marinade")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Ingredients" })).toBeVisible();
-    await expect(page.getByText("karam (chili powder)")).toBeVisible();
-    await expect(page.getByText("pasupu (turmeric)")).toBeVisible();
-    await expect(page.getByText("besan (chickpea flour)")).toBeVisible();
+    await expect(page.getByText("karam (chili powder)", { exact: true })).toBeVisible();
+    await expect(page.getByText("pasupu (turmeric)", { exact: true })).toBeVisible();
+    await expect(page.getByText("besan (chickpea flour)", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Instructions" })).toBeVisible();
-    await expect(page.getByText("425°F")).toBeVisible();
-    await expect(page.getByText("Air fry for 20 minutes.")).toBeVisible();
+    await expect(page.locator(".steps li")).toHaveText([
+      "Marinate with the listed ingredients and oil.",
+      "Preheat the air fryer to 425°F.",
+      "Air fry for 20 minutes.",
+    ]);
     const sourceLink = page.getByRole("link", { name: /view on my food story/i });
     await expect(sourceLink).toHaveAttribute("href", "https://myfoodstory.com/chatpata-chicken-bites/");
     await expect(sourceLink).toHaveAttribute("target", "_blank");
