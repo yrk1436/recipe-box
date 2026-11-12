@@ -14,6 +14,7 @@ const recipeSlugs = [
   "banana-cake",
   "jenthikulu",
   "soft-mysore-pak",
+  "chatpata-chicken",
   "demo-weeknight-dal",
   "demo-mango-lassi",
   "demo-paneer-toast",
@@ -99,6 +100,41 @@ test.describe("recipe URLs and navigation", () => {
       await page.goto(href);
       await expect(page.locator("#main")).toBeVisible();
     }
+  });
+
+  test("chatpata chicken lists on home and categories and credits My Food Story", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Chatpata Chicken" }).first()).toBeVisible();
+
+    await page.goto("/recipes/");
+    await expect(page.getByRole("heading", { name: "Chatpata Chicken" })).toBeVisible();
+
+    await page.goto("/categories/indian/");
+    await expect(page.getByRole("heading", { name: "Chatpata Chicken" })).toBeVisible();
+
+    await page.goto("/categories/snacks/");
+    await expect(page.getByRole("heading", { name: "Chatpata Chicken" })).toBeVisible();
+
+    const response = await page.goto("/recipes/chatpata-chicken/");
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole("heading", { name: "Chatpata Chicken" })).toBeVisible();
+    await expect(page.getByText(/Chicken marinated with salt/)).toBeVisible();
+    await expect(page.getByText("Her marinade")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Ingredients" })).toBeVisible();
+    await expect(page.getByText("karam (chili powder)", { exact: true })).toBeVisible();
+    await expect(page.getByText("pasupu (turmeric)", { exact: true })).toBeVisible();
+    await expect(page.getByText("besan (chickpea flour)", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Instructions" })).toBeVisible();
+    await expect(page.locator(".steps li")).toHaveText([
+      "Marinate with the listed ingredients and oil.",
+      "Preheat the air fryer to 425°F.",
+      "Air fry for 20 minutes.",
+    ]);
+    const sourceLink = page.getByRole("link", { name: /view on my food story/i });
+    await expect(sourceLink).toHaveAttribute("href", "https://myfoodstory.com/chatpata-chicken-bites/");
+    await expect(sourceLink).toHaveAttribute("target", "_blank");
+    await expect(page.getByRole("heading", { name: "Recipe from My Food Story" })).toHaveCount(0);
+    await expect(page.getByRole("img", { name: /homemade air-fried chatpata chicken/i })).toBeVisible();
   });
 
   test("unknown slugs show the custom 404", async ({ page }) => {

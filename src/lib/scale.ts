@@ -15,7 +15,7 @@ export type ScaledIngredient = Ingredient & {
 
 export function recipeIsScalable(recipe: Pick<Recipe, "scalable" | "ingredients">): boolean {
   if (recipe.scalable === false) return false;
-  return recipe.ingredients.some((ingredient) => ingredientCanScale(ingredient));
+  return (recipe.ingredients ?? []).some((ingredient) => ingredientCanScale(ingredient));
 }
 
 export function ingredientCanScale(ingredient: Ingredient): boolean {

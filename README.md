@@ -2,7 +2,7 @@
 
 A static, phone-first cookbook for recipes made and loved at home. There is no database, account, or editor. Each recipe is a structured file in Git. Search, filters, favorites, checklists, and serving scaling run in the browser.
 
-This is Stage 1: the site, design system, and pages, with **Banana Cake**, **Jenthikulu**, and **Soft Mysore Pak** as the real household recipes. A few clearly labelled DEMO recipes exist only so filters can be tried. Recipe import from Apple Notes is Stage 2; the workflow is documented below.
+This is Stage 1: the site, design system, and pages, with **Banana Cake**, **Jenthikulu**, **Soft Mysore Pak**, and **Chatpata Chicken** as the real household recipes. A few clearly labelled DEMO recipes exist only so filters can be tried. Recipe import from Apple Notes is Stage 2; the workflow is documented below.
 
 ## Stack
 
@@ -40,7 +40,7 @@ npm run test:e2e       # Playwright, builds first
 ## Adding a recipe
 
 1. Copy `src/data/recipes/_example.yml` to `src/data/recipes/your-slug.yml`.
-2. Fill in only what you know. Leave servings, times, difficulty, and similar fields out if the note does not have them. Do not invent quantities.
+2. Fill in only what you know. Leave servings, times, difficulty, and similar fields out if the note does not have them. Do not invent quantities. If the family followed a published recipe, you may omit ingredients and steps and link the source URL instead of reprinting it.
 3. Put a photo at `src/assets/images/recipes/your-photo.jpg` and the same file at `public/images/recipes/your-photo.jpg`. Set `image` to the filename.
 4. Run `npm run check` and `npm run build`. The build fails on missing slugs, duplicate ids, bad ingredients, or broken local image paths.
 5. Commit and push. Vercel rebuilds the static site.
