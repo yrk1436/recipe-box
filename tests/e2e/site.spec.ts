@@ -15,6 +15,7 @@ const recipeSlugs = [
   "jenthikulu",
   "soft-mysore-pak",
   "chatpata-chicken",
+  "vegetable-ragi-soup",
   "demo-weeknight-dal",
   "demo-mango-lassi",
   "demo-paneer-toast",
@@ -141,6 +142,24 @@ test.describe("recipe URLs and navigation", () => {
     const response = await page.goto("/recipes/does-not-exist/");
     expect(response?.status()).toBe(404);
     await expect(page.getByRole("heading", { name: /not in this cookbook/i })).toBeVisible();
+  });
+
+  test("vegetable ragi soup keeps family Instant Pot wording", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const issues = await collectPageIssues(page);
+    await page.goto("/recipes/vegetable-ragi-soup/");
+    await expect(page.getByRole("heading", { name: "Vegetable Ragi Soup" })).toBeVisible();
+    await expect(page.getByText("Instant Pot").first()).toBeVisible();
+    await expect(page.getByText("one spoon of oil")).toBeVisible();
+    await expect(page.getByText("all the veggies").first()).toBeVisible();
+    await expect(page.getByText("Once all the veggies are sautéed")).toBeVisible();
+    await expect(page.getByText("Pressure cook for five minutes.")).toBeVisible();
+    await expect(page.getByText("just add boiled shredded chicken at the end.")).toBeVisible();
+    await expect(page.getByText("Photo: Family photo")).toBeVisible();
+    await expect(page.locator(".meta-row span", { hasText: /^Cook / })).toHaveCount(0);
+    await expect(page.locator(".meta-row span", { hasText: /^Total / })).toHaveCount(0);
+    await expect(page.getByRole("img", { name: /vegetable ragi soup in a white bowl/i })).toBeVisible();
+    await issues.assertClean();
   });
 });
 

@@ -1,0 +1,51 @@
+id: vegetable-ragi-soup
+slug: vegetable-ragi-soup
+title: Vegetable Ragi Soup
+subtitle: Instant Pot
+description: Instant Pot vegetable ragi soup — sauté aromatics and vegetables, pressure cook, then thicken with a ragi flour slurry. Optional boiled shredded chicken at the end.
+personalNote: From Swathi's kitchen notes. The photo is the version with boiled shredded chicken added at the end.
+image: vegetable-ragi-soup.jpg
+imageAlt: Homemade vegetable ragi soup in a white bowl, with shredded chicken, peas, corn, carrots, and green pepper in a brown broth. This photo is the version with boiled shredded chicken added at the end.
+cuisine: Indian
+mealTypes:
+  - dinner
+tags:
+  - soup
+  - instant-pot
+  - ragi
+  - savory
+ingredients:
+  - quantity: "one"
+    unit: spoon
+    name: oil
+  - name: finely chopped garlic
+  - name: spring onions
+  - name: all the veggies
+  - name: crushed ginger
+  - name: salt
+  - name: pepper
+  - name: soya sauce
+  - name: chili sauce
+  - name: vinegar
+  - name: water
+  - name: ragi flour
+    prep: for a slurry
+  - name: black pepper
+  - name: white pepper
+  - name: boiled shredded chicken
+    prep: optional
+instructions:
+  - Take the Instant Pot and add one spoon of oil.
+  - Fry finely chopped garlic, spring onions, all the veggies, and crushed ginger for a very flavorful taste.
+  - Once all the veggies are sautéed, add some salt, pepper, soya sauce, chili sauce, vinegar, and then add water.
+  - Pressure cook for five minutes.
+  - Once it's done, release the pressure and put it in sauté mode.
+  - Once it's boiling, add a ragi flour slurry into it.
+  - Adjust the consistency, add spring onions, and adjust the taste with pepper, black pepper, and white pepper.
+  - If you want to make this as a chicken soup, just add boiled shredded chicken at the end.
+cookingMethod: pressure-cook
+scalable: false
+dateAdded: "2026-11-11"
+source:
+  note: From Swathi's kitchen notes
+  imageCredit: Family photo
