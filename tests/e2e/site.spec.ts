@@ -158,7 +158,7 @@ test.describe("recipe URLs and navigation", () => {
     await expect(page.getByText("Photo: Family photo")).toBeVisible();
     await expect(page.locator(".meta-row span", { hasText: /^Cook / })).toHaveCount(0);
     await expect(page.locator(".meta-row span", { hasText: /^Total / })).toHaveCount(0);
-    await expect(page.getByRole("img", { name: /white bowl/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /vegetable ragi soup in a white bowl/i })).toBeVisible();
     await issues.assertClean();
   });
 });
