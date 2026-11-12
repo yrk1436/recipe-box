@@ -17,9 +17,24 @@ type Props = {
 
 const { recipe, related } = Astro.props;
 const image = getRecipeImage(recipe.image);
-const groups = groupIngredients(scaleIngredients(recipe.ingredients, 1));
-const canScale = recipeIsScalable(recipe);
-const contentKey = recipeContentKey(recipe);
+const ingredients = recipe.ingredients ?? [];
+const instructions = recipe.instructions ?? [];
+const groups = groupIngredients(scaleIngredients(ingredients, 1));
+const canScale = recipeIsScalable({ ...recipe, ingredients });
+const contentKey = recipeContentKey({ ...recipe, ingredients, instructions });
+const hasIngredients = ingredients.length > 0;
+const hasInstructions = instructions.length > 0;
+const hasMethod = hasIngredients || hasInstructions;
+const sourceUrl = recipe.source?.url;
+const sourceName = recipe.source?.name;
+const sourceOnly = Boolean(sourceUrl) && !hasMethod;
+const sourceLinkLabel = sourceName
+  ? sourceOnly
+    ? `Open the full recipe on ${sourceName}`
+    : `View on ${sourceName}`
+  : sourceOnly
+    ? "Open the full recipe"
+    : "View source";
 ---
 
 <article class="narrow recipe-page" data-recipe-detail>
@@ -32,8 +47,8 @@ const contentKey = recipeContentKey(recipe);
       servings: recipe.servings ?? null,
       scalable: canScale,
       contentKey,
-      ingredients: recipe.ingredients,
-      instructions: recipe.instructions,
+      ingredients,
+      instructions,
     })}
   />
 
@@ -69,6 +84,24 @@ const contentKey = recipeContentKey(recipe);
   {recipe.personalNote && <p class="serif" style="font-size: var(--text-lg);">{recipe.personalNote}</p>}
   {recipe.description && <p class="muted">{recipe.description}</p>}
 
+  {
+    sourceOnly && recipe.source && (
+      <section class="panel" style="margin: var(--space-6) 0;">
+        <h2>{sourceName ? `Recipe from ${sourceName}` : "Full recipe"}</h2>
+        {recipe.source.note && <p class="muted">{recipe.source.note}</p>}
+        {sourceUrl && (
+          <p>
+            <a class="button" href={sourceUrl} target="_blank" rel="noopener noreferrer">
+              {sourceLinkLabel}
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+        )}
+        {recipe.source.imageCredit && <p class="subtle">Photo: {recipe.source.imageCredit}</p>}
+      </section>
+    )
+  }
+
   <div class="meta-row" style="margin: var(--space-5) 0;">
     {recipe.cuisine && <span>{recipe.cuisine}</span>}
     {recipe.mealTypes?.map((type) => <span>{formatMealType(type)}</span>)}
@@ -86,54 +119,65 @@ const contentKey = recipeContentKey(recipe);
     <FavoriteButton id={recipe.id} title={recipe.title} />
     <button type="button" class="button-secondary" data-share>Share</button>
     <button type="button" class="button-secondary" data-print>Print</button>
-    <button type="button" class="button-secondary" data-cook>Cook mode</button>
+    {hasInstructions && <button type="button" class="button-secondary" data-cook>Cook mode</button>}
   </div>
   <p class="notice" data-share-status hidden></p>
 
+  {
+    !sourceOnly && (
   <div class="recipe-layout" style="margin-top: var(--space-8);">
-    <section class="panel">
-      <div class="section__head">
-        <h2>Ingredients</h2>
-        <button type="button" class="button-ghost" data-reset-checklist>Reset</button>
-      </div>
-      {
-        canScale && (
-          <div class="servings no-print">
-            <button type="button" class="icon-button" data-scale-down aria-label="Decrease scale">−</button>
-            <p data-scale-label>
-              {recipe.servings != null ? `${recipe.servings} servings` : "1× recipe"}
-            </p>
-            <button type="button" class="icon-button" data-scale-up aria-label="Increase scale">+</button>
+    {
+      hasIngredients && (
+        <section class="panel">
+          <div class="section__head">
+            <h2>Ingredients</h2>
+            <button type="button" class="button-ghost" data-reset-checklist>Reset</button>
           </div>
-        )
-      }
-      <div data-ingredients>
-        {
-          groups.map((group) => (
-            <div>
-              {group.name && <h3>{group.name}</h3>}
-              {group.items.map((item, index) => (
-                <label class="ingredient">
-                  <input type="checkbox" data-ingredient-index={index} />
-                  <span>
-                    <strong data-qty>{item.displayQuantity}</strong>
-                    {item.unit ? ` ${item.unit}` : ""} {item.name}
-                    {item.prep ? `, ${item.prep}` : ""}
-                    {item.scalable === false && item.displayQuantity ? <em class="subtle"> · as written</em> : ""}
-                  </span>
-                </label>
-              ))}
-            </div>
-          ))
-        }
-      </div>
-    </section>
+          {
+            canScale && (
+              <div class="servings no-print">
+                <button type="button" class="icon-button" data-scale-down aria-label="Decrease scale">−</button>
+                <p data-scale-label>
+                  {recipe.servings != null ? `${recipe.servings} servings` : "1× recipe"}
+                </p>
+                <button type="button" class="icon-button" data-scale-up aria-label="Increase scale">+</button>
+              </div>
+            )
+          }
+          <div data-ingredients>
+            {
+              groups.map((group) => (
+                <div>
+                  {group.name && <h3>{group.name}</h3>}
+                  {group.items.map((item, index) => (
+                    <label class="ingredient">
+                      <input type="checkbox" data-ingredient-index={index} />
+                      <span>
+                        <strong data-qty>{item.displayQuantity}</strong>
+                        {item.displayQuantity ? (item.unit ? ` ${item.unit} ` : " ") : ""}{item.name}{item.prep ? `, ${item.prep}` : ""}
+                        {item.scalable === false && item.displayQuantity ? <em class="subtle"> · as written</em> : ""}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ))
+            }
+          </div>
+        </section>
+      )
+    }
 
     <section>
-      <h2>Instructions</h2>
-      <ol class="steps">
-        {recipe.instructions.map((step) => <li>{step}</li>)}
-      </ol>
+      {
+        hasInstructions && (
+          <>
+            <h2>Instructions</h2>
+            <ol class="steps">
+              {instructions.map((step) => <li>{step}</li>)}
+            </ol>
+          </>
+        )
+      }
 
       {
         recipe.tips && recipe.tips.length > 0 && (
@@ -174,14 +218,17 @@ const contentKey = recipeContentKey(recipe);
         )
       }
       {
-        recipe.source && (
+        recipe.source && !sourceOnly && (
           <section style="margin-top: var(--space-6);">
             <h2>Source</h2>
             {recipe.source.name && <p>{recipe.source.name}</p>}
             {recipe.source.note && <p class="muted">{recipe.source.note}</p>}
             {recipe.source.url && (
               <p>
-                <a href={recipe.source.url}>{recipe.source.url}</a>
+                <a href={recipe.source.url} target="_blank" rel="noopener noreferrer">
+                  {sourceLinkLabel}
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
               </p>
             )}
             {recipe.source.imageCredit && <p class="subtle">Photo: {recipe.source.imageCredit}</p>}
@@ -190,6 +237,8 @@ const contentKey = recipeContentKey(recipe);
       }
     </section>
   </div>
+    )
+  }
 
   <p style="margin-top: var(--space-8);"><a href="/recipes/">Back to all recipes</a></p>
 

@@ -3,7 +3,7 @@ import type { Recipe } from "../types/recipe";
 import { normalizeSearch } from "./search";
 
 function ingredientTokens(recipe: Recipe): Set<string> {
-  return new Set(recipe.ingredients.map((item) => normalizeSearch(item.name)).filter(Boolean));
+  return new Set((recipe.ingredients ?? []).map((item) => normalizeSearch(item.name)).filter(Boolean));
 }
 
 export function relatedRecipes(recipe: Recipe, all: Recipe[], limit = 3): Recipe[] {

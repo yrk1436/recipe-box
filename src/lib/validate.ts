@@ -73,7 +73,7 @@ export function validateRecipeSet(
       });
     }
 
-    for (const [index, ingredient] of recipe.ingredients.entries()) {
+    for (const [index, ingredient] of (recipe.ingredients ?? []).entries()) {
       if (!ingredient.name?.trim()) {
         issues.push({
           file: entry.file,

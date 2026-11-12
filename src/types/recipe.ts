@@ -80,8 +80,8 @@ export const recipeSchema = z.object({
   dietaryTags: z.array(z.enum(dietaryTags)).optional(),
   tags: z.array(z.string().min(1)).optional(),
   aliases: z.array(z.string().min(1)).optional(),
-  ingredients: z.array(ingredientSchema).min(1, "at least one ingredient is required"),
-  instructions: z.array(z.string().min(1)).min(1, "at least one instruction is required"),
+  ingredients: z.array(ingredientSchema).default([]),
+  instructions: z.array(z.string().min(1)).default([]),
   prepTimeMinutes: z.number().int().nonnegative().optional(),
   cookTimeMinutes: z.number().int().nonnegative().optional(),
   totalTimeMinutes: z.number().int().nonnegative().optional(),
@@ -97,6 +97,22 @@ export const recipeSchema = z.object({
   scalable: z.boolean().optional(),
   cookingMethod: z.enum(cookingMethods).optional(),
   demo: z.boolean().optional(),
+}).superRefine((recipe, ctx) => {
+  if (recipe.source?.url) return;
+  if (recipe.ingredients.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["ingredients"],
+      message: "at least one ingredient is required",
+    });
+  }
+  if (recipe.instructions.length === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["instructions"],
+      message: "at least one instruction is required",
+    });
+  }
 });
 
 export type Ingredient = z.infer<typeof ingredientSchema>;
@@ -153,7 +169,7 @@ export function toCardModel(recipe: Recipe): RecipeCardModel {
     featured: recipe.featured,
     cookingMethod: recipe.cookingMethod,
     demo: recipe.demo,
-    ingredientNames: recipe.ingredients.map((item) =>
+    ingredientNames: (recipe.ingredients ?? []).map((item) =>
       [item.name, item.prep].filter(Boolean).join(" "),
     ),
   };
